@@ -1,641 +1,496 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chocafé — Ni tout à fait café, ni tout à fait chocolat</title>
+<title>Chocafé — 50% café, 50% chocolat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --yellow: #EAD583;
-    --yellow-soft: #F2E2A4;
-    --yellow-deep: #C79A2A;
-    --brown: #3B2213;
-    --brown-deep: #1D1109;
-    --cacao-accent: #9A5B3A;
-    --ink: #241407;
-    --split: 50;
-    --mx: 50%;
-    --my: 50%;
-    --radius: 2px;
+    --cream: #F3E9D8;
+    --foam: #FAF4E8;
+    --coffee: #8B5A2B;
+    --coffee-dark: #3E2317;
+    --cacao: #4A2E2E;
+    --cacao-dark: #241313;
+    --gold: #C89B5C;
+    --ink: #241814;
+    --mix: 50;
+    font-size: 16px;
   }
-
-  *{margin:0;padding:0;box-sizing:border-box;}
+  *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
-
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
-    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
-  }
-
   body{
-    background:var(--yellow-soft);
-    color:var(--ink);
     font-family:'Work Sans', sans-serif;
-    font-size:16px;
-    line-height:1.6;
+    color:var(--ink);
+    background:var(--foam);
     overflow-x:hidden;
-    position:relative;
   }
-
-  /* film grain overlay, fixed across whole page */
-  body::before{
-    content:'';
-    position:fixed;
-    inset:0;
-    z-index:200;
-    pointer-events:none;
-    opacity:0.05;
-    mix-blend-mode:overlay;
-    background-image:
-      radial-gradient(circle at 20% 30%, #000 0.5px, transparent 0.5px),
-      radial-gradient(circle at 60% 70%, #000 0.5px, transparent 0.5px),
-      radial-gradient(circle at 80% 20%, #000 0.5px, transparent 0.5px);
-    background-size:3px 3px, 5px 5px, 4px 4px;
-  }
-
-  h1,h2,h3{
+  h1,h2,h3,.display{
     font-family:'Fraunces', serif;
     font-weight:600;
     letter-spacing:-0.01em;
   }
-
-  .eyebrow{
-    font-family:'Space Mono', monospace;
-    font-size:0.72rem;
-    letter-spacing:0.16em;
+  .mono{
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing:0.04em;
     text-transform:uppercase;
-    opacity:0.65;
+    font-size:0.72rem;
   }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
 
-  a{color:inherit;}
-
-  [data-reveal]{
-    opacity:0;
-    transform:translateY(28px);
-    transition:opacity 0.8s cubic-bezier(.16,.8,.3,1), transform 0.8s cubic-bezier(.16,.8,.3,1);
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
   }
-  [data-reveal].in-view{opacity:1; transform:translateY(0);}
 
   /* ---------- NAV ---------- */
-  header{
-    position:fixed;
-    top:0; left:0; right:0;
-    z-index:100;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:1.4rem clamp(1.2rem, 4vw, 3rem);
-    mix-blend-mode:difference;
-    color:var(--yellow);
+  header.nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(250,244,232,0.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(36,24,20,0.08);
   }
-
+  .nav-inner{
+    max-width:1180px; margin:0 auto; padding:18px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
   .logo{
-    font-family:'Fraunces', serif;
-    font-weight:700;
-    font-size:1.3rem;
-    letter-spacing:-0.02em;
+    font-family:'Fraunces', serif; font-weight:700; font-size:1.4rem;
   }
-  .logo span{font-style:italic; font-weight:300;}
-
-  nav ul{list-style:none; display:flex; gap:clamp(1rem, 2.5vw, 2.2rem); font-size:0.85rem;}
-  nav a{text-decoration:none; position:relative;}
-  nav a::after{
-    content:'';
-    position:absolute; left:0; bottom:-4px;
-    width:0%; height:1px; background:currentColor;
-    transition:width 0.3s ease;
+  .logo .c1{color:var(--cacao);}
+  .logo .c2{color:var(--coffee);}
+  nav.links{display:flex; gap:34px;}
+  nav.links a{font-size:0.95rem; font-weight:500; position:relative; padding-bottom:2px;}
+  nav.links a::after{
+    content:''; position:absolute; left:0; bottom:-3px; width:0; height:1.5px;
+    background:var(--gold); transition:width .25s ease;
   }
-  nav a:hover::after, nav a:focus-visible::after{width:100%;}
-
-  /* ---------- HERO / DIVIDER ---------- */
-  .blend-hero{
-    position:relative;
-    height:100svh;
-    min-height:560px;
-    overflow:hidden;
+  nav.links a:hover::after{width:100%;}
+  .nav-cta{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; text-transform:uppercase;
+    letter-spacing:0.05em; border:1px solid var(--ink); padding:9px 16px; border-radius:100px;
+    transition:background .2s ease, color .2s ease;
   }
+  .nav-cta:hover{background:var(--ink); color:var(--foam);}
 
-  .blend-hero::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    z-index:4;
-    pointer-events:none;
-    background:radial-gradient(circle 380px at var(--mx) var(--my), rgba(255,255,255,0.14), transparent 70%);
-    mix-blend-mode:overlay;
-    transition:background 0.05s linear;
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; min-height:100vh; display:flex; flex-direction:column;
+    justify-content:center; align-items:center; overflow:hidden; padding:120px 24px 60px;
   }
-
-  .blend-panel{
-    position:absolute;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    padding:0 clamp(1.5rem, 6vw, 5rem);
+  .hero-bg{
+    position:absolute; inset:0; z-index:0;
   }
-
-  .blend-panel--coffee{
-    background:
-      radial-gradient(ellipse at 15% 15%, rgba(199,154,42,0.35), transparent 55%),
-      var(--yellow);
-    color:var(--ink);
-    clip-path:inset(0 calc(100% - var(--split) * 1%) 0 0);
-    align-items:flex-start;
-    text-align:left;
-    transition:clip-path 0.05s linear;
+  .panel-coffee, .panel-cacao{
+    position:absolute; top:0; bottom:0; width:100%;
+  }
+  .panel-coffee{
+    background:linear-gradient(160deg, var(--coffee) 0%, var(--coffee-dark) 100%);
+    clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
+  }
+  .panel-cacao{
+    background:linear-gradient(200deg, var(--cacao) 0%, var(--cacao-dark) 100%);
+    clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%);
+  }
+  .seam-svg{
+    position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none;
+    mix-blend-mode:overlay; opacity:0.5;
+  }
+  .hero-inner{
+    position:relative; z-index:2; max-width:760px; text-align:center; color:var(--foam);
+  }
+  .eyebrow{color:var(--gold); margin-bottom:18px; display:inline-block;}
+  .hero h1{
+    font-size:clamp(2.4rem, 6vw, 4.4rem); line-height:1.04; margin-bottom:22px;
+    text-wrap:balance;
+  }
+  .hero h1 em{font-style:italic; color:var(--gold); font-weight:500;}
+  .hero p.lead{
+    font-size:1.1rem; opacity:0.92; max-width:520px; margin:0 auto 40px; line-height:1.55;
   }
 
-  .blend-panel--cacao{
-    background:
-      radial-gradient(ellipse at 85% 85%, rgba(154,91,58,0.35), transparent 55%),
-      var(--brown-deep);
-    color:var(--yellow);
-    align-items:flex-end;
-    text-align:right;
+  /* dosage slider */
+  .dosage{
+    width:100%; max-width:480px; margin:0 auto 36px;
+  }
+  .dosage-labels{
+    display:flex; justify-content:space-between; margin-bottom:10px;
+  }
+  .dosage-labels span{font-family:'JetBrains Mono', monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; opacity:0.85;}
+  input[type=range]{
+    -webkit-appearance:none; appearance:none; width:100%; height:2px;
+    background:rgba(250,244,232,0.4); border-radius:2px; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+    background:var(--gold); border:3px solid var(--foam); cursor:grab;
+    box-shadow:0 2px 8px rgba(0,0,0,0.35);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:22px; height:22px; border-radius:50%;
+    background:var(--gold); border:3px solid var(--foam); cursor:grab;
+    box-shadow:0 2px 8px rgba(0,0,0,0.35);
+  }
+  .dosage-readout{
+    margin-top:12px; font-family:'JetBrains Mono', monospace; font-size:0.78rem;
+    letter-spacing:0.04em; color:var(--gold);
   }
 
-  .blend-copy{max-width:480px; position:relative; z-index:2;}
-  .blend-panel--cacao .blend-copy{margin-left:auto;}
+  .hero-ctas{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+  .btn{
+    font-weight:500; padding:14px 26px; border-radius:100px; font-size:0.95rem;
+    transition:transform .2s ease, background .2s ease;
+    display:inline-block;
+  }
+  .btn-primary{background:var(--gold); color:var(--ink);}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{border:1px solid rgba(250,244,232,0.5); color:var(--foam);}
+  .btn-ghost:hover{background:rgba(250,244,232,0.12);}
 
-  .blend-copy h1{
-    font-size:clamp(2.2rem, 6vw, 4.4rem);
-    line-height:1.02;
-    margin:0.6rem 0 1rem;
+  .scroll-cue{
+    position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
+    z-index:2; color:var(--foam); opacity:0.7; font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
   }
-  .blend-copy h1 em{font-style:italic; font-weight:300;}
-  .blend-copy p{font-size:1.02rem; max-width:38ch; opacity:0.85;}
-  .blend-panel--cacao .blend-copy p{margin-left:auto;}
+  .scroll-cue .line{width:1px; height:26px; background:var(--foam); opacity:0.5; animation:pulse-line 1.8s ease-in-out infinite;}
+  @keyframes pulse-line{0%,100%{transform:scaleY(0.4); opacity:0.3;} 50%{transform:scaleY(1); opacity:0.8;}}
 
-  .divider-line{
-    position:absolute;
-    top:0; bottom:0;
-    left:calc(var(--split) * 1%);
-    width:2px;
-    background:var(--ink);
-    transform:translateX(-1px);
-    pointer-events:none;
-    z-index:3;
-    box-shadow:0 0 26px 4px rgba(234,213,131,0.55);
-    animation:pulse-glow 2.6s ease-in-out infinite;
-  }
+  /* ---------- SECTION GENERIC ---------- */
+  section{padding:120px 0;}
+  .section-head{max-width:640px; margin-bottom:64px;}
+  .section-head .mono{color:var(--coffee); margin-bottom:14px; display:block;}
+  .section-head h2{font-size:clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.15;}
 
-  @keyframes pulse-glow{
-    0%, 100%{box-shadow:0 0 20px 3px rgba(234,213,131,0.4);}
-    50%{box-shadow:0 0 34px 6px rgba(234,213,131,0.75);}
-  }
+  /* reveal */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.is-visible{opacity:1; transform:translateY(0);}
 
-  .split-readout{
-    position:absolute;
-    top:50%; left:calc(var(--split) * 1%);
-    transform:translate(-50%, -50%);
-    z-index:5;
-    display:flex; flex-direction:column; align-items:center; gap:0.4rem;
-    pointer-events:none;
+  /* ---------- CONCEPT ---------- */
+  .concept{background:var(--foam);}
+  .concept-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:stretch;
   }
-
-  .split-readout .fig{
-    font-family:'Space Mono', monospace;
-    color:var(--yellow);
-    background:var(--ink);
-    border:1px solid rgba(234,213,131,0.5);
-    border-radius:999px;
-    padding:0.55rem 0.9rem;
-    font-size:0.78rem;
-    letter-spacing:0.04em;
-    white-space:nowrap;
-    transition:transform 0.15s ease;
+  .concept-text{max-width:420px;}
+  .concept-text p{margin-bottom:20px; line-height:1.7; color:rgba(36,24,20,0.85);}
+  .origin-cards{display:flex; flex-direction:column; gap:18px;}
+  .origin-card{
+    padding:28px 30px; border-radius:18px; color:var(--foam);
   }
-
-  .blend-slider{
-    position:absolute; inset:0; width:100%; height:100%;
-    -webkit-appearance:none; appearance:none;
-    background:transparent; margin:0; cursor:ew-resize; z-index:10;
-  }
-  .blend-slider:focus-visible{outline:3px solid var(--cacao-accent); outline-offset:-3px;}
-  .blend-slider::-webkit-slider-thumb{-webkit-appearance:none; width:1px; height:1px; opacity:0;}
-  .blend-slider::-moz-range-thumb{width:1px; height:1px; opacity:0; border:none;}
-  .blend-slider::-moz-range-track{background:transparent;}
-
-  .hero-hint{
-    position:absolute;
-    bottom:2rem; left:50%; transform:translateX(-50%);
-    color:var(--yellow);
-    font-family:'Space Mono', monospace;
-    font-size:0.68rem;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    opacity:0.75;
-    z-index:5;
-    pointer-events:none;
-    text-align:center;
-    animation:bob 2.4s ease-in-out infinite;
-  }
-  @keyframes bob{
-    0%,100%{transform:translate(-50%, 0);}
-    50%{transform:translate(-50%, -6px);}
-  }
-
-  /* floating decorative particles */
-  .particle{
-    position:absolute;
-    border-radius:50%;
-    pointer-events:none;
-    z-index:1;
-    opacity:0.5;
-    animation:drift linear infinite;
-  }
-  @keyframes drift{
-    0%{transform:translateY(0) rotate(0deg);}
-    50%{transform:translateY(-24px) rotate(180deg);}
-    100%{transform:translateY(0) rotate(360deg);}
-  }
-
-  /* ---------- SECTION SHELL ---------- */
-  section{padding:clamp(4rem, 9vw, 7.5rem) clamp(1.2rem, 6vw, 5rem);}
-  .section-head{max-width:640px; margin-bottom:3rem;}
-  .section-head h2{font-size:clamp(1.9rem, 3.6vw, 2.8rem); margin-top:0.5rem;}
+  .origin-card.coffee-card{background:linear-gradient(135deg, var(--coffee), var(--coffee-dark));}
+  .origin-card.cacao-card{background:linear-gradient(135deg, var(--cacao), var(--cacao-dark));}
+  .origin-card .mono{color:var(--gold); margin-bottom:10px; display:block;}
+  .origin-card h3{font-size:1.3rem; margin-bottom:6px; font-weight:500;}
+  .origin-card p{font-size:0.9rem; opacity:0.85; line-height:1.5;}
 
   /* ---------- MENU ---------- */
-  .menu{background:var(--brown-deep); color:var(--yellow); position:relative;}
-  .menu .section-head .eyebrow{color:var(--yellow-deep);}
-
-  .menu-grid{
-    display:grid;
-    grid-template-columns:1fr 1px 1.15fr 1px 1fr;
-    gap:clamp(1.5rem, 3vw, 2.5rem);
-    align-items:start;
+  .menu{background:var(--cream);}
+  .menu-list{display:flex; flex-direction:column;}
+  .menu-item{
+    display:grid; grid-template-columns:1.4fr 2fr auto; gap:24px; align-items:center;
+    padding:26px 0; border-bottom:1px solid rgba(36,24,20,0.12);
   }
-  .menu-rule{background:rgba(234,213,131,0.16); height:100%; min-height:200px;}
-
-  .menu-col h3{
-    font-size:0.78rem; font-family:'Space Mono', monospace;
-    text-transform:uppercase; letter-spacing:0.12em; font-weight:400;
-    margin-bottom:1.6rem; opacity:0.75;
+  .menu-item:first-child{border-top:1px solid rgba(36,24,20,0.12);}
+  .menu-item h4{font-family:'Fraunces', serif; font-weight:600; font-size:1.25rem;}
+  .menu-item .desc{font-size:0.92rem; color:rgba(36,24,20,0.7); line-height:1.5;}
+  .menu-item .price{font-family:'JetBrains Mono', monospace; font-size:0.95rem; justify-self:end;}
+  .dose-track{
+    position:relative; width:120px; height:6px; border-radius:4px; margin-top:10px;
+    background:linear-gradient(90deg, var(--coffee), var(--cacao));
   }
-  .menu-col--center h3{color:var(--cacao-accent); opacity:1;}
-
-  .item{
-    display:flex; justify-content:space-between; gap:1rem;
-    padding:1rem 0.6rem 1rem 0;
-    border-bottom:1px solid rgba(234,213,131,0.12);
-    transition:transform 0.25s ease, background 0.25s ease, padding-left 0.25s ease;
-    border-radius:6px;
+  .dose-track .marker{
+    position:absolute; top:50%; width:12px; height:12px; border-radius:50%;
+    background:var(--foam); border:2px solid var(--ink); transform:translate(-50%,-50%);
   }
-  .item:first-of-type{padding-top:0;}
-  .item:hover{
-    background:rgba(234,213,131,0.06);
-    transform:translateX(4px);
-    padding-left:0.6rem;
+  .dose-caption{font-family:'JetBrains Mono', monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.05em; color:rgba(36,24,20,0.55); margin-top:6px;}
+
+  @media (max-width:720px){
+    .menu-item{grid-template-columns:1fr; gap:8px;}
+    .menu-item .price{justify-self:start;}
   }
 
-  .item-name{font-family:'Fraunces', serif; font-size:1.08rem;}
-  .item-desc{display:block; font-family:'Work Sans', sans-serif; font-size:0.82rem; opacity:0.6; margin-top:0.25rem; font-weight:400;}
-  .item-price{font-family:'Space Mono', monospace; font-size:0.85rem; opacity:0.7; white-space:nowrap; padding-top:0.15rem;}
-  .menu-col--center .item{border-bottom-color:rgba(154,91,58,0.3);}
+  /* ---------- ESPACE ---------- */
+  .espace{background:var(--foam);}
+  .espace-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;}
+  .espace-text p{line-height:1.7; color:rgba(36,24,20,0.85); margin-bottom:18px;}
+  .espace-visual{
+    position:relative; aspect-ratio:1/1; border-radius:24px; overflow:hidden;
+    background:linear-gradient(135deg, var(--coffee) 0%, var(--coffee) 48%, var(--cacao) 52%, var(--cacao) 100%);
+  }
+  .espace-visual svg{position:absolute; inset:0; width:100%; height:100%;}
 
-  /* ---------- HISTOIRE ---------- */
-  .histoire{
-    background:var(--yellow-soft);
-    display:grid;
-    grid-template-columns:0.9fr 1.1fr;
-    gap:clamp(2rem, 5vw, 4rem);
-    align-items:center;
+  @media (max-width:860px){
+    .concept-grid, .espace-grid{grid-template-columns:1fr;}
   }
 
-  .histoire-visual{
-    aspect-ratio:4/5;
-    border-radius:var(--radius);
-    background:linear-gradient(155deg, var(--yellow) 0%, var(--yellow) 49.5%, var(--yellow-soft) 49.5%, var(--yellow-soft) 50.5%, var(--brown-deep) 50.5%, var(--brown-deep) 100%);
-    background-size:220% 220%;
-    animation:shift-gradient 9s ease-in-out infinite;
-    position:relative;
-    overflow:hidden;
-    transform-style:preserve-3d;
-    will-change:transform;
-  }
-  @keyframes shift-gradient{
-    0%,100%{background-position:0% 0%;}
-    50%{background-position:20% 10%;}
-  }
-
-  .histoire-visual::before{
-    content:'50 / 50';
-    position:absolute; top:50%; left:50%;
-    transform:translate(-50%,-50%) rotate(-35deg);
-    font-family:'Space Mono', monospace;
-    color:var(--yellow-soft);
-    font-size:0.75rem;
-    letter-spacing:0.2em;
-    opacity:0.85;
-  }
-
-  .histoire-text .eyebrow{color:var(--cacao-accent);}
-  .histoire-text h2{font-size:clamp(1.9rem, 3.4vw, 2.6rem); margin:0.6rem 0 1.3rem;}
-  .histoire-text p{max-width:52ch; margin-bottom:1rem; opacity:0.85;}
-  .histoire-text p:last-child{margin-bottom:0;}
-
-  /* ---------- FOOTER ---------- */
+  /* ---------- CONTACT / FOOTER ---------- */
   footer{
-    background:var(--brown);
-    color:var(--yellow);
-    padding:clamp(3.5rem, 8vw, 5.5rem) clamp(1.2rem, 6vw, 5rem) 2.2rem;
-    position:relative;
-    overflow:hidden;
+    background:var(--cacao-dark); color:var(--foam); padding:90px 0 40px;
   }
-
   .footer-grid{
-    display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.5rem;
-    padding-bottom:3rem; border-bottom:1px solid rgba(234,213,131,0.18);
+    display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:50px; margin-bottom:70px;
+  }
+  footer h3{font-size:1.6rem; margin-bottom:16px; max-width:340px;}
+  footer .lead-foot{opacity:0.75; line-height:1.6; max-width:340px; margin-bottom:26px;}
+  .newsletter{display:flex; gap:0; max-width:340px; border-bottom:1px solid rgba(250,244,232,0.4); padding-bottom:8px;}
+  .newsletter input{
+    background:transparent; border:none; outline:none; color:var(--foam); flex:1; font-size:0.95rem; font-family:'Work Sans';
+  }
+  .newsletter input::placeholder{color:rgba(250,244,232,0.5);}
+  .newsletter button{background:none; border:none; color:var(--gold); font-weight:600; cursor:pointer; font-size:0.95rem;}
+  .foot-col .mono{color:var(--gold); margin-bottom:16px; display:block;}
+  .foot-col p, .foot-col a{display:block; margin-bottom:10px; opacity:0.85; font-size:0.95rem;}
+  .foot-col a:hover{opacity:1; text-decoration:underline;}
+  .foot-bottom{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    padding-top:28px; border-top:1px solid rgba(250,244,232,0.15);
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; opacity:0.6; letter-spacing:0.03em;
   }
 
-  .footer-brand .logo{font-size:1.6rem; margin-bottom:0.8rem; display:block;}
-  .footer-brand p{max-width:32ch; opacity:0.75; font-size:0.92rem;}
-
-  .footer-col h4{
-    font-family:'Space Mono', monospace; font-size:0.72rem;
-    text-transform:uppercase; letter-spacing:0.12em; opacity:0.6;
-    margin-bottom:1rem; font-weight:400;
-  }
-  .footer-col p, .footer-col a{display:block; font-size:0.92rem; opacity:0.85; text-decoration:none; margin-bottom:0.5rem;}
-  .footer-col a:hover{opacity:1; text-decoration:underline;}
-
-  .footer-bottom{
-    display:flex; justify-content:space-between; align-items:center;
-    padding-top:1.6rem; font-size:0.75rem; opacity:0.55; flex-wrap:wrap; gap:0.5rem;
+  @media (max-width:860px){
+    .footer-grid{grid-template-columns:1fr; gap:36px;}
   }
 
-  /* ---------- CTA BUTTON ---------- */
-  .btn{
-    position:relative;
-    display:inline-flex; align-items:center; gap:0.6rem;
-    margin-top:1.6rem;
-    padding:0.85rem 1.5rem;
-    border:1px solid currentColor;
-    border-radius:999px;
-    font-family:'Space Mono', monospace;
-    font-size:0.78rem;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    text-decoration:none;
-    overflow:hidden;
-    z-index:2;
-    transition:color 0.35s ease;
-  }
-  .btn::before{
-    content:'';
-    position:absolute;
-    top:0; left:-110%;
-    width:100%; height:100%;
-    background:var(--ink);
-    transition:left 0.4s cubic-bezier(.16,.8,.3,1);
-    z-index:-1;
-  }
-  .btn:hover{color:var(--yellow);}
-  .btn:hover::before{left:0;}
-
-  /* ---------- RESPONSIVE ---------- */
-  @media (max-width: 860px){
-    nav ul{display:none;}
-    .histoire{grid-template-columns:1fr;}
-    .histoire-visual{aspect-ratio:16/10;}
-    .footer-grid{grid-template-columns:1fr; gap:2rem;}
-  }
-  @media (max-width: 720px){
-    .menu-grid{grid-template-columns:1fr;}
-    .menu-rule{display:none;}
-    .menu-col{margin-bottom:1rem;}
-    .blend-copy{max-width:90%;}
-    .blend-panel--coffee .blend-copy, .blend-panel--cacao .blend-copy{margin-left:0; margin-right:0;}
-    .blend-panel--cacao{align-items:flex-start; text-align:left;}
-    .split-readout .fig{font-size:0.68rem; padding:0.45rem 0.7rem;}
+  @media (max-width:640px){
+    nav.links{display:none;}
+    .concept-grid{gap:20px;}
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Choca<span>fé</span></div>
-  <nav aria-label="Navigation principale">
-    <ul>
-      <li><a href="#melange">Le Mélange</a></li>
-      <li><a href="#carte">La Carte</a></li>
-      <li><a href="#histoire">L'Histoire</a></li>
-      <li><a href="#visite">Nous trouver</a></li>
-    </ul>
-  </nav>
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="c1">Choc</span><span class="c2">afé</span></div>
+    <nav class="links">
+      <a href="#concept">Le concept</a>
+      <a href="#carte">La carte</a>
+      <a href="#espace">L'espace</a>
+      <a href="#adresse">L'adresse</a>
+    </nav>
+    <a href="#adresse" class="nav-cta">Réserver</a>
+  </div>
 </header>
 
-<section class="blend-hero" id="melange" aria-label="Réglage interactif du mélange café-chocolat">
-  <div class="blend-panel blend-panel--cacao">
-    <div class="blend-copy">
-      <span class="eyebrow">100% chocolat</span>
-      <h1>Intense.<br><em>Amer</em> juste ce qu'il faut.</h1>
-      <p>Cacao torréfié, fondu lentement, servi dans une tasse trop chaude pour être bue tout de suite.</p>
+<section class="hero">
+  <div class="hero-bg">
+    <div class="panel-coffee" id="panelCoffee"></div>
+    <div class="panel-cacao" id="panelCacao"></div>
+  </div>
+  <svg class="seam-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <defs>
+      <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/></filter>
+    </defs>
+    <rect width="100" height="100" filter="url(#grain)"/>
+  </svg>
+
+  <div class="hero-inner">
+    <span class="eyebrow mono">Torréfacteur & chocolatier — même comptoir</span>
+    <h1 id="heroTitle">50% café, 50% chocolat,<br><em>100% Chocafé</em></h1>
+    <p class="lead">Le comptoir où l'arabica rencontre le cacao. Un même geste artisanal, deux matières premières, une seule adresse.</p>
+
+    <div class="dosage">
+      <div class="dosage-labels">
+        <span>100% café</span>
+        <span>100% chocolat</span>
+      </div>
+      <input type="range" id="mixSlider" min="0" max="100" value="50" aria-label="Doser votre humeur entre café et chocolat">
+      <div class="dosage-readout" id="mixReadout">Votre dosage : 50 / 50 — l'équilibre Chocafé</div>
+    </div>
+
+    <div class="hero-ctas">
+      <a href="#carte" class="btn btn-primary">Voir la carte</a>
+      <a href="#adresse" class="btn btn-ghost">Réserver une table</a>
     </div>
   </div>
 
-  <div class="blend-panel blend-panel--coffee">
-    <div class="blend-copy">
-      <span class="eyebrow">100% café</span>
-      <h1>Vif.<br><em>Rond</em> en bouche.</h1>
-      <p>Arabica torréfié à Paris, extrait court, sans détour — pour ceux qui n'ont pas le temps de choisir.</p>
-      <a href="#carte" class="btn">Voir la carte →</a>
+  <div class="scroll-cue"><span>Découvrir</span><div class="line"></div></div>
+</section>
+
+<section class="concept" id="concept">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="mono">Le concept</span>
+      <h2>Pourquoi couper la carte en deux ?</h2>
+    </div>
+    <div class="concept-grid">
+      <div class="concept-text reveal">
+        <p>Chocafé est né d'un constat simple : le café et le cacao partagent la même origine tropicale, la même torréfaction, le même savoir-faire de fermentation. Pourtant, on les sert toujours séparément.</p>
+        <p>Ici, un seul comptoir accueille le torréfacteur et la chocolaterie. Les grains sont sélectionnés en binôme, cru par cru, pour que chaque boisson puisse pencher côté café, côté chocolat, ou pile au milieu.</p>
+        <p>Pas de compromis : deux métiers, pratiqués avec la même exigence, sous le même toit.</p>
+      </div>
+      <div class="origin-cards reveal">
+        <div class="origin-card coffee-card">
+          <span class="mono">Côté café</span>
+          <h3>Éthiopie & Colombie</h3>
+          <p>Lots micro-torréfiés chaque semaine, en petites quantités, pour préserver les notes fruitées des crus d'origine.</p>
+        </div>
+        <div class="origin-card cacao-card">
+          <span class="mono">Côté chocolat</span>
+          <h3>Pérou & São Tomé</h3>
+          <p>Fèves de cacao trinitario, conchées sur place, transformées en tablettes, boissons et pâtisseries maison.</p>
+        </div>
+      </div>
     </div>
   </div>
-
-  <div class="divider-line" id="dividerLine"></div>
-  <div class="split-readout" id="splitReadout">
-    <span class="fig" id="splitFig">50% café — 50% chocolat</span>
-  </div>
-
-  <input
-    type="range"
-    class="blend-slider"
-    id="blendSlider"
-    min="0" max="100" value="50"
-    step="1"
-    aria-label="Glissez pour doser votre mélange entre café et chocolat"
-  >
-
-  <div class="hero-hint">← glissez pour doser votre mélange →</div>
 </section>
 
 <section class="menu" id="carte">
-  <div class="section-head" data-reveal>
-    <span class="eyebrow">La carte</span>
-    <h2>Trois colonnes.<br>Un seul comptoir.</h2>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="mono">La carte</span>
+      <h2>Chaque boisson a son propre dosage</h2>
+    </div>
+    <div class="menu-list">
+
+      <div class="menu-item reveal">
+        <div>
+          <h4>Chocafé Signature</h4>
+          <div class="dose-track"><div class="marker" style="left:50%"></div></div>
+          <div class="dose-caption">50 / 50</div>
+        </div>
+        <div class="desc">Espresso et chocolat trinitario fondu, montés ensemble à la vapeur, sans sucre ajouté.</div>
+        <div class="price">6,50 €</div>
+      </div>
+
+      <div class="menu-item reveal">
+        <div>
+          <h4>Cortado d'Éthiopie</h4>
+          <div class="dose-track"><div class="marker" style="left:12%"></div></div>
+          <div class="dose-caption">Plutôt café</div>
+        </div>
+        <div class="desc">Double espresso, lait micro-moussé, une pointe de copeaux de cacao en surface.</div>
+        <div class="price">4,20 €</div>
+      </div>
+
+      <div class="menu-item reveal">
+        <div>
+          <h4>Mocha marbré</h4>
+          <div class="dose-track"><div class="marker" style="left:65%"></div></div>
+          <div class="dose-caption">Légèrement chocolat</div>
+        </div>
+        <div class="desc">Ganache maison, espresso, lait chaud, marbré à la commande devant vous.</div>
+        <div class="price">5,80 €</div>
+      </div>
+
+      <div class="menu-item reveal">
+        <div>
+          <h4>Chocolat chaud de São Tomé</h4>
+          <div class="dose-track"><div class="marker" style="left:92%"></div></div>
+          <div class="dose-caption">100% chocolat</div>
+        </div>
+        <div class="desc">Cacao 70% fondu au lait entier, sans poudre, servi avec un carré à tremper.</div>
+        <div class="price">5,50 €</div>
+      </div>
+
+      <div class="menu-item reveal">
+        <div>
+          <h4>Mendiant du torréfacteur</h4>
+          <div class="dose-track"><div class="marker" style="left:80%"></div></div>
+          <div class="dose-caption">Plutôt chocolat</div>
+        </div>
+        <div class="desc">Tablette noir 70%, fèves de cacao torréfiées et grains de café concassés.</div>
+        <div class="price">4,00 €</div>
+      </div>
+
+    </div>
   </div>
+</section>
 
-  <div class="menu-grid">
-    <div class="menu-col menu-col--coffee" data-reveal>
-      <h3>Côté café</h3>
-      <div class="item">
-        <span><span class="item-name">Espresso</span><span class="item-desc">Arabica du Brésil, extraction courte</span></span>
-        <span class="item-price">3,20 €</span>
+<section class="espace" id="espace">
+  <div class="wrap">
+    <div class="espace-grid">
+      <div class="espace-text reveal">
+        <span class="mono" style="color:var(--coffee); display:block; margin-bottom:14px;">L'espace</span>
+        <h2 style="margin-bottom:22px; font-size:clamp(1.8rem,3vw,2.4rem);">Un comptoir, deux ateliers visibles</h2>
+        <p>D'un côté, le torréfacteur tourne chaque matin dès 7h. De l'autre, la plonge à chocolat conche et tempère à vue. Entre les deux, le bar où les deux mondes se mélangent, tasse après tasse.</p>
+        <p>28 places assises, une grande table d'hôte en chêne brûlé, et une vitrine commune pour les grains de café et les fèves de cacao du moment.</p>
       </div>
-      <div class="item">
-        <span><span class="item-name">Cappuccino</span><span class="item-desc">Mousse de lait entier, cacao en poudre</span></span>
-        <span class="item-price">4,50 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Latte noisette</span><span class="item-desc">Sirop de noisette maison</span></span>
-        <span class="item-price">5,00 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Cold brew</span><span class="item-desc">Infusion à froid 16h</span></span>
-        <span class="item-price">4,80 €</span>
-      </div>
-    </div>
-
-    <div class="menu-rule" aria-hidden="true"></div>
-
-    <div class="menu-col menu-col--center" data-reveal>
-      <h3>Les mélanges</h3>
-      <div class="item">
-        <span><span class="item-name">Le Chocafé</span><span class="item-desc">Notre signature — espresso et chocolat noir 70%, à parts égales</span></span>
-        <span class="item-price">5,80 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Mocha classique</span><span class="item-desc">Espresso, chocolat au lait, crème légère</span></span>
-        <span class="item-price">5,40 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Moka épicé</span><span class="item-desc">Chocolat, café, cannelle, piment doux</span></span>
-        <span class="item-price">5,90 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Affogato cacao</span><span class="item-desc">Glace au chocolat noyée d'espresso</span></span>
-        <span class="item-price">6,20 €</span>
-      </div>
-    </div>
-
-    <div class="menu-rule" aria-hidden="true"></div>
-
-    <div class="menu-col menu-col--cacao" data-reveal>
-      <h3>Côté chocolat</h3>
-      <div class="item">
-        <span><span class="item-name">Chocolat chaud</span><span class="item-desc">Ganache fondue, non sucrée</span></span>
-        <span class="item-price">4,90 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Mendiants</span><span class="item-desc">Amandes, noisettes, écorces d'orange</span></span>
-        <span class="item-price">3,50 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Truffes maison</span><span class="item-desc">Cacao 65%, fleur de sel — la boîte de 4</span></span>
-        <span class="item-price">7,00 €</span>
-      </div>
-      <div class="item">
-        <span><span class="item-name">Tablette du mois</span><span class="item-desc">Origine unique, torréfaction artisanale</span></span>
-        <span class="item-price">6,50 €</span>
+      <div class="espace-visual reveal" aria-hidden="true">
+        <svg viewBox="0 0 400 400">
+          <circle cx="140" cy="200" r="70" fill="none" stroke="var(--foam)" stroke-width="3" opacity="0.85"/>
+          <path d="M 210 200 Q 260 150 260 200 Q 260 250 210 200" fill="none" stroke="var(--foam)" stroke-width="3" opacity="0.85"/>
+          <rect x="230" y="160" width="80" height="80" rx="6" fill="none" stroke="var(--foam)" stroke-width="3" opacity="0.85"/>
+        </svg>
       </div>
     </div>
   </div>
 </section>
 
-<section class="histoire" id="histoire">
-  <div class="histoire-visual" role="img" aria-label="Illustration abstraite représentant un partage égal entre café et chocolat" data-reveal></div>
-  <div class="histoire-text" data-reveal>
-    <span class="eyebrow">L'histoire</span>
-    <h2>On nous demandait toujours de choisir.</h2>
-    <p>Chocafé est né d'un désaccord amical : d'un côté, une obsession pour le café de spécialité ; de l'autre, une adresse dans le chocolat de couverture. Plutôt que de trancher, on a ouvert une carte à deux entrées.</p>
-    <p>Chaque boisson est pensée comme un dosage, pas comme un choix. Le comptoir a deux torréfacteurs, deux fondoirs, et une seule règle : jamais l'un ne doit dominer l'autre sans qu'on le décide ensemble, en salle, tasse après tasse.</p>
-  </div>
-</section>
-
-<footer id="visite">
-  <div class="footer-grid">
-    <div class="footer-brand" data-reveal>
-      <span class="logo">Choca<span style="font-style:italic; font-weight:300;">fé</span></span>
-      <p>Un comptoir où le café et le chocolat se partagent chaque tasse à parts égales.</p>
+<footer id="adresse">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="foot-col">
+        <h3>Passez doser votre journée.</h3>
+        <p class="lead-foot">Ouvert tous les jours, du premier espresso au dernier chocolat chaud.</p>
+        <div class="newsletter">
+          <input type="email" placeholder="Votre email">
+          <button type="button">S'inscrire →</button>
+        </div>
+      </div>
+      <div class="foot-col">
+        <span class="mono">Adresse</span>
+        <p>12 rue de la Chocolatière<br>75011 Paris</p>
+        <a href="#">Voir sur le plan</a>
+      </div>
+      <div class="foot-col">
+        <span class="mono">Horaires</span>
+        <p>Lun – Ven : 7h30 – 19h<br>Sam – Dim : 9h – 19h</p>
+        <a href="mailto:bonjour@chocafe.fr">bonjour@chocafe.fr</a>
+        <a href="tel:+33100000000">01 00 00 00 00</a>
+      </div>
     </div>
-    <div class="footer-col" data-reveal>
-      <h4>Nous trouver</h4>
-      <p>14 rue des Blancs-Manteaux<br>75004 Paris</p>
-      <a href="https://maps.google.com" target="_blank" rel="noopener">Voir sur la carte →</a>
+    <div class="foot-bottom">
+      <span>© 2026 Chocafé — Paris</span>
+      <span>Torréfacteur & chocolatier artisanal</span>
     </div>
-    <div class="footer-col" data-reveal>
-      <h4>Horaires</h4>
-      <p>Lun – Ven : 8h00 – 19h00</p>
-      <p>Sam – Dim : 9h00 – 20h00</p>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2026 Chocafé</span>
-    <span>Fait à parts égales, à Paris</span>
   </div>
 </footer>
 
 <script>
-  // --- blend slider ---
-  const slider = document.getElementById('blendSlider');
-  const root = document.documentElement;
-  const fig = document.getElementById('splitFig');
+  // --- dosage slider driving hero ---
+  const slider = document.getElementById('mixSlider');
+  const panelCoffee = document.getElementById('panelCoffee');
+  const panelCacao = document.getElementById('panelCacao');
+  const readout = document.getElementById('mixReadout');
+  const title = document.getElementById('heroTitle');
 
-  function update(val){
-    root.style.setProperty('--split', val);
-    const coffee = parseInt(val, 10);
-    const cacao = 100 - coffee;
-    fig.textContent = coffee + '% café — ' + cacao + '% chocolat';
+  function updateMix(val){
+    const v = Number(val);
+    // seam position 20%..80% based on slider (0..100)
+    const seam = 20 + (v/100)*60;
+    const wobble = 20;
+    panelCoffee.style.clipPath = `polygon(0 0, ${seam+wobble/2}% 0, ${seam-wobble/2}% 100%, 0 100%)`;
+    panelCacao.style.clipPath = `polygon(${seam+wobble/2}% 0, 100% 0, 100% 100%, ${seam-wobble/2}% 100%)`;
+
+    let label, heading;
+    if(v <= 20){ label = `Votre dosage : ${100-v} / ${v} — franchement café`; heading = `Plutôt café<br><em>avec un soupçon de chocolat</em>`; }
+    else if(v >= 80){ label = `Votre dosage : ${100-v} / ${v} — franchement chocolat`; heading = `Plutôt chocolat<br><em>avec un soupçon de café</em>`; }
+    else if(v > 45 && v < 55){ label = `Votre dosage : 50 / 50 — l'équilibre Chocafé`; heading = `50% café, 50% chocolat,<br><em>100% Chocafé</em>`; }
+    else if(v < 50){ label = `Votre dosage : ${100-v} / ${v} — un peu plus café`; heading = `Un peu plus café,<br><em>toujours du chocolat</em>`; }
+    else { label = `Votre dosage : ${100-v} / ${v} — un peu plus chocolat`; heading = `Un peu plus chocolat,<br><em>toujours du café</em>`; }
+    readout.textContent = label;
+    title.innerHTML = heading;
   }
-  slider.addEventListener('input', (e) => update(e.target.value));
-  update(slider.value);
-
-  // --- cursor spotlight in hero ---
-  const hero = document.querySelector('.blend-hero');
-  hero.addEventListener('pointermove', (e) => {
-    const rect = hero.getBoundingClientRect();
-    const mx = ((e.clientX - rect.left) / rect.width) * 100;
-    const my = ((e.clientY - rect.top) / rect.height) * 100;
-    hero.style.setProperty('--mx', mx + '%');
-    hero.style.setProperty('--my', my + '%');
-  });
-
-  // --- floating particles (bean-like dots) ---
-  const particleColors = ['#EAD583', '#9A5B3A', '#C79A2A', '#1D1109'];
-  for (let i = 0; i < 14; i++){
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = 4 + Math.random() * 8;
-    p.style.width = size + 'px';
-    p.style.height = (size * 0.7) + 'px';
-    p.style.left = Math.random() * 100 + '%';
-    p.style.top = Math.random() * 100 + '%';
-    p.style.background = particleColors[Math.floor(Math.random() * particleColors.length)];
-    p.style.animationDuration = (5 + Math.random() * 6) + 's';
-    p.style.animationDelay = (Math.random() * -8) + 's';
-    hero.appendChild(p);
-  }
+  slider.addEventListener('input', (e) => updateMix(e.target.value));
+  updateMix(50);
 
   // --- scroll reveal ---
-  const revealEls = document.querySelectorAll('[data-reveal]');
+  const revealEls = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting){
-        entry.target.classList.add('in-view');
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
         io.unobserve(entry.target);
       }
     });
   }, { threshold: 0.15 });
-  revealEls.forEach((el) => io.observe(el));
-
-  // --- subtle tilt on histoire visual ---
-  const visual = document.querySelector('.histoire-visual');
-  if (visual){
-    visual.addEventListener('pointermove', (e) => {
-      const rect = visual.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width - 0.5;
-      const py = (e.clientY - rect.top) / rect.height - 0.5;
-      visual.style.transform = `rotateY(${px * 8}deg) rotateX(${-py * 8}deg)`;
-    });
-    visual.addEventListener('pointerleave', () => {
-      visual.style.transform = 'rotateY(0deg) rotateX(0deg)';
-    });
-  }
+  revealEls.forEach(el => io.observe(el));
 </script>
 
 </body>
