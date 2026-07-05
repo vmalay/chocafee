@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chocafé — Ni tout à fait café, ni tout à fait chocolat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --yellow: #EAD583;
+    --yellow-soft: #F2E2A4;
+    --yellow-deep: #C79A2A;
+    --brown: #3B2213;
+    --brown-deep: #1D1109;
+    --cacao-accent: #9A5B3A;
+    --ink: #241407;
+    --split: 50;
+    --mx: 50%;
+    --my: 50%;
+    --radius: 2px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    background:var(--yellow-soft);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* film grain overlay, fixed across whole page */
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    z-index:200;
+    pointer-events:none;
+    opacity:0.05;
+    mix-blend-mode:overlay;
+    background-image:
+      radial-gradient(circle at 20% 30%, #000 0.5px, transparent 0.5px),
+      radial-gradient(circle at 60% 70%, #000 0.5px, transparent 0.5px),
+      radial-gradient(circle at 80% 20%, #000 0.5px, transparent 0.5px);
+    background-size:3px 3px, 5px 5px, 4px 4px;
+  }
+
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    opacity:0.65;
+  }
+
+  a{color:inherit;}
+
+  [data-reveal]{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity 0.8s cubic-bezier(.16,.8,.3,1), transform 0.8s cubic-bezier(.16,.8,.3,1);
+  }
+  [data-reveal].in-view{opacity:1; transform:translateY(0);}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.4rem clamp(1.2rem, 4vw, 3rem);
+    mix-blend-mode:difference;
+    color:var(--yellow);
+  }
+
+  .logo{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:1.3rem;
+    letter-spacing:-0.02em;
+  }
+  .logo span{font-style:italic; font-weight:300;}
+
+  nav ul{list-style:none; display:flex; gap:clamp(1rem, 2.5vw, 2.2rem); font-size:0.85rem;}
+  nav a{text-decoration:none; position:relative;}
+  nav a::after{
+    content:'';
+    position:absolute; left:0; bottom:-4px;
+    width:0%; height:1px; background:currentColor;
+    transition:width 0.3s ease;
+  }
+  nav a:hover::after, nav a:focus-visible::after{width:100%;}
+
+  /* ---------- HERO / DIVIDER ---------- */
+  .blend-hero{
+    position:relative;
+    height:100svh;
+    min-height:560px;
+    overflow:hidden;
+  }
+
+  .blend-hero::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    z-index:4;
+    pointer-events:none;
+    background:radial-gradient(circle 380px at var(--mx) var(--my), rgba(255,255,255,0.14), transparent 70%);
+    mix-blend-mode:overlay;
+    transition:background 0.05s linear;
+  }
+
+  .blend-panel{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:0 clamp(1.5rem, 6vw, 5rem);
+  }
+
+  .blend-panel--coffee{
+    background:
+      radial-gradient(ellipse at 15% 15%, rgba(199,154,42,0.35), transparent 55%),
+      var(--yellow);
+    color:var(--ink);
+    clip-path:inset(0 calc(100% - var(--split) * 1%) 0 0);
+    align-items:flex-start;
+    text-align:left;
+    transition:clip-path 0.05s linear;
+  }
+
+  .blend-panel--cacao{
+    background:
+      radial-gradient(ellipse at 85% 85%, rgba(154,91,58,0.35), transparent 55%),
+      var(--brown-deep);
+    color:var(--yellow);
+    align-items:flex-end;
+    text-align:right;
+  }
+
+  .blend-copy{max-width:480px; position:relative; z-index:2;}
+  .blend-panel--cacao .blend-copy{margin-left:auto;}
+
+  .blend-copy h1{
+    font-size:clamp(2.2rem, 6vw, 4.4rem);
+    line-height:1.02;
+    margin:0.6rem 0 1rem;
+  }
+  .blend-copy h1 em{font-style:italic; font-weight:300;}
+  .blend-copy p{font-size:1.02rem; max-width:38ch; opacity:0.85;}
+  .blend-panel--cacao .blend-copy p{margin-left:auto;}
+
+  .divider-line{
+    position:absolute;
+    top:0; bottom:0;
+    left:calc(var(--split) * 1%);
+    width:2px;
+    background:var(--ink);
+    transform:translateX(-1px);
+    pointer-events:none;
+    z-index:3;
+    box-shadow:0 0 26px 4px rgba(234,213,131,0.55);
+    animation:pulse-glow 2.6s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow{
+    0%, 100%{box-shadow:0 0 20px 3px rgba(234,213,131,0.4);}
+    50%{box-shadow:0 0 34px 6px rgba(234,213,131,0.75);}
+  }
+
+  .split-readout{
+    position:absolute;
+    top:50%; left:calc(var(--split) * 1%);
+    transform:translate(-50%, -50%);
+    z-index:5;
+    display:flex; flex-direction:column; align-items:center; gap:0.4rem;
+    pointer-events:none;
+  }
+
+  .split-readout .fig{
+    font-family:'Space Mono', monospace;
+    color:var(--yellow);
+    background:var(--ink);
+    border:1px solid rgba(234,213,131,0.5);
+    border-radius:999px;
+    padding:0.55rem 0.9rem;
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    white-space:nowrap;
+    transition:transform 0.15s ease;
+  }
+
+  .blend-slider{
+    position:absolute; inset:0; width:100%; height:100%;
+    -webkit-appearance:none; appearance:none;
+    background:transparent; margin:0; cursor:ew-resize; z-index:10;
+  }
+  .blend-slider:focus-visible{outline:3px solid var(--cacao-accent); outline-offset:-3px;}
+  .blend-slider::-webkit-slider-thumb{-webkit-appearance:none; width:1px; height:1px; opacity:0;}
+  .blend-slider::-moz-range-thumb{width:1px; height:1px; opacity:0; border:none;}
+  .blend-slider::-moz-range-track{background:transparent;}
+
+  .hero-hint{
+    position:absolute;
+    bottom:2rem; left:50%; transform:translateX(-50%);
+    color:var(--yellow);
+    font-family:'Space Mono', monospace;
+    font-size:0.68rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    opacity:0.75;
+    z-index:5;
+    pointer-events:none;
+    text-align:center;
+    animation:bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{transform:translate(-50%, 0);}
+    50%{transform:translate(-50%, -6px);}
+  }
+
+  /* floating decorative particles */
+  .particle{
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:1;
+    opacity:0.5;
+    animation:drift linear infinite;
+  }
+  @keyframes drift{
+    0%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-24px) rotate(180deg);}
+    100%{transform:translateY(0) rotate(360deg);}
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:clamp(4rem, 9vw, 7.5rem) clamp(1.2rem, 6vw, 5rem);}
+  .section-head{max-width:640px; margin-bottom:3rem;}
+  .section-head h2{font-size:clamp(1.9rem, 3.6vw, 2.8rem); margin-top:0.5rem;}
+
+  /* ---------- MENU ---------- */
+  .menu{background:var(--brown-deep); color:var(--yellow); position:relative;}
+  .menu .section-head .eyebrow{color:var(--yellow-deep);}
+
+  .menu-grid{
+    display:grid;
+    grid-template-columns:1fr 1px 1.15fr 1px 1fr;
+    gap:clamp(1.5rem, 3vw, 2.5rem);
+    align-items:start;
+  }
+  .menu-rule{background:rgba(234,213,131,0.16); height:100%; min-height:200px;}
+
+  .menu-col h3{
+    font-size:0.78rem; font-family:'Space Mono', monospace;
+    text-transform:uppercase; letter-spacing:0.12em; font-weight:400;
+    margin-bottom:1.6rem; opacity:0.75;
+  }
+  .menu-col--center h3{color:var(--cacao-accent); opacity:1;}
+
+  .item{
+    display:flex; justify-content:space-between; gap:1rem;
+    padding:1rem 0.6rem 1rem 0;
+    border-bottom:1px solid rgba(234,213,131,0.12);
+    transition:transform 0.25s ease, background 0.25s ease, padding-left 0.25s ease;
+    border-radius:6px;
+  }
+  .item:first-of-type{padding-top:0;}
+  .item:hover{
+    background:rgba(234,213,131,0.06);
+    transform:translateX(4px);
+    padding-left:0.6rem;
+  }
+
+  .item-name{font-family:'Fraunces', serif; font-size:1.08rem;}
+  .item-desc{display:block; font-family:'Work Sans', sans-serif; font-size:0.82rem; opacity:0.6; margin-top:0.25rem; font-weight:400;}
+  .item-price{font-family:'Space Mono', monospace; font-size:0.85rem; opacity:0.7; white-space:nowrap; padding-top:0.15rem;}
+  .menu-col--center .item{border-bottom-color:rgba(154,91,58,0.3);}
+
+  /* ---------- HISTOIRE ---------- */
+  .histoire{
+    background:var(--yellow-soft);
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:clamp(2rem, 5vw, 4rem);
+    align-items:center;
+  }
+
+  .histoire-visual{
+    aspect-ratio:4/5;
+    border-radius:var(--radius);
+    background:linear-gradient(155deg, var(--yellow) 0%, var(--yellow) 49.5%, var(--yellow-soft) 49.5%, var(--yellow-soft) 50.5%, var(--brown-deep) 50.5%, var(--brown-deep) 100%);
+    background-size:220% 220%;
+    animation:shift-gradient 9s ease-in-out infinite;
+    position:relative;
+    overflow:hidden;
+    transform-style:preserve-3d;
+    will-change:transform;
+  }
+  @keyframes shift-gradient{
+    0%,100%{background-position:0% 0%;}
+    50%{background-position:20% 10%;}
+  }
+
+  .histoire-visual::before{
+    content:'50 / 50';
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%) rotate(-35deg);
+    font-family:'Space Mono', monospace;
+    color:var(--yellow-soft);
+    font-size:0.75rem;
+    letter-spacing:0.2em;
+    opacity:0.85;
+  }
+
+  .histoire-text .eyebrow{color:var(--cacao-accent);}
+  .histoire-text h2{font-size:clamp(1.9rem, 3.4vw, 2.6rem); margin:0.6rem 0 1.3rem;}
+  .histoire-text p{max-width:52ch; margin-bottom:1rem; opacity:0.85;}
+  .histoire-text p:last-child{margin-bottom:0;}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    background:var(--brown);
+    color:var(--yellow);
+    padding:clamp(3.5rem, 8vw, 5.5rem) clamp(1.2rem, 6vw, 5rem) 2.2rem;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .footer-grid{
+    display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.5rem;
+    padding-bottom:3rem; border-bottom:1px solid rgba(234,213,131,0.18);
+  }
+
+  .footer-brand .logo{font-size:1.6rem; margin-bottom:0.8rem; display:block;}
+  .footer-brand p{max-width:32ch; opacity:0.75; font-size:0.92rem;}
+
+  .footer-col h4{
+    font-family:'Space Mono', monospace; font-size:0.72rem;
+    text-transform:uppercase; letter-spacing:0.12em; opacity:0.6;
+    margin-bottom:1rem; font-weight:400;
+  }
+  .footer-col p, .footer-col a{display:block; font-size:0.92rem; opacity:0.85; text-decoration:none; margin-bottom:0.5rem;}
+  .footer-col a:hover{opacity:1; text-decoration:underline;}
+
+  .footer-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top:1.6rem; font-size:0.75rem; opacity:0.55; flex-wrap:wrap; gap:0.5rem;
+  }
+
+  /* ---------- CTA BUTTON ---------- */
+  .btn{
+    position:relative;
+    display:inline-flex; align-items:center; gap:0.6rem;
+    margin-top:1.6rem;
+    padding:0.85rem 1.5rem;
+    border:1px solid currentColor;
+    border-radius:999px;
+    font-family:'Space Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    text-decoration:none;
+    overflow:hidden;
+    z-index:2;
+    transition:color 0.35s ease;
+  }
+  .btn::before{
+    content:'';
+    position:absolute;
+    top:0; left:-110%;
+    width:100%; height:100%;
+    background:var(--ink);
+    transition:left 0.4s cubic-bezier(.16,.8,.3,1);
+    z-index:-1;
+  }
+  .btn:hover{color:var(--yellow);}
+  .btn:hover::before{left:0;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 860px){
+    nav ul{display:none;}
+    .histoire{grid-template-columns:1fr;}
+    .histoire-visual{aspect-ratio:16/10;}
+    .footer-grid{grid-template-columns:1fr; gap:2rem;}
+  }
+  @media (max-width: 720px){
+    .menu-grid{grid-template-columns:1fr;}
+    .menu-rule{display:none;}
+    .menu-col{margin-bottom:1rem;}
+    .blend-copy{max-width:90%;}
+    .blend-panel--coffee .blend-copy, .blend-panel--cacao .blend-copy{margin-left:0; margin-right:0;}
+    .blend-panel--cacao{align-items:flex-start; text-align:left;}
+    .split-readout .fig{font-size:0.68rem; padding:0.45rem 0.7rem;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Choca<span>fé</span></div>
+  <nav aria-label="Navigation principale">
+    <ul>
+      <li><a href="#melange">Le Mélange</a></li>
+      <li><a href="#carte">La Carte</a></li>
+      <li><a href="#histoire">L'Histoire</a></li>
+      <li><a href="#visite">Nous trouver</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="blend-hero" id="melange" aria-label="Réglage interactif du mélange café-chocolat">
+  <div class="blend-panel blend-panel--cacao">
+    <div class="blend-copy">
+      <span class="eyebrow">100% chocolat</span>
+      <h1>Intense.<br><em>Amer</em> juste ce qu'il faut.</h1>
+      <p>Cacao torréfié, fondu lentement, servi dans une tasse trop chaude pour être bue tout de suite.</p>
+    </div>
+  </div>
+
+  <div class="blend-panel blend-panel--coffee">
+    <div class="blend-copy">
+      <span class="eyebrow">100% café</span>
+      <h1>Vif.<br><em>Rond</em> en bouche.</h1>
+      <p>Arabica torréfié à Paris, extrait court, sans détour — pour ceux qui n'ont pas le temps de choisir.</p>
+      <a href="#carte" class="btn">Voir la carte →</a>
+    </div>
+  </div>
+
+  <div class="divider-line" id="dividerLine"></div>
+  <div class="split-readout" id="splitReadout">
+    <span class="fig" id="splitFig">50% café — 50% chocolat</span>
+  </div>
+
+  <input
+    type="range"
+    class="blend-slider"
+    id="blendSlider"
+    min="0" max="100" value="50"
+    step="1"
+    aria-label="Glissez pour doser votre mélange entre café et chocolat"
+  >
+
+  <div class="hero-hint">← glissez pour doser votre mélange →</div>
+</section>
+
+<section class="menu" id="carte">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">La carte</span>
+    <h2>Trois colonnes.<br>Un seul comptoir.</h2>
+  </div>
+
+  <div class="menu-grid">
+    <div class="menu-col menu-col--coffee" data-reveal>
+      <h3>Côté café</h3>
+      <div class="item">
+        <span><span class="item-name">Espresso</span><span class="item-desc">Arabica du Brésil, extraction courte</span></span>
+        <span class="item-price">3,20 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Cappuccino</span><span class="item-desc">Mousse de lait entier, cacao en poudre</span></span>
+        <span class="item-price">4,50 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Latte noisette</span><span class="item-desc">Sirop de noisette maison</span></span>
+        <span class="item-price">5,00 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Cold brew</span><span class="item-desc">Infusion à froid 16h</span></span>
+        <span class="item-price">4,80 €</span>
+      </div>
+    </div>
+
+    <div class="menu-rule" aria-hidden="true"></div>
+
+    <div class="menu-col menu-col--center" data-reveal>
+      <h3>Les mélanges</h3>
+      <div class="item">
+        <span><span class="item-name">Le Chocafé</span><span class="item-desc">Notre signature — espresso et chocolat noir 70%, à parts égales</span></span>
+        <span class="item-price">5,80 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Mocha classique</span><span class="item-desc">Espresso, chocolat au lait, crème légère</span></span>
+        <span class="item-price">5,40 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Moka épicé</span><span class="item-desc">Chocolat, café, cannelle, piment doux</span></span>
+        <span class="item-price">5,90 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Affogato cacao</span><span class="item-desc">Glace au chocolat noyée d'espresso</span></span>
+        <span class="item-price">6,20 €</span>
+      </div>
+    </div>
+
+    <div class="menu-rule" aria-hidden="true"></div>
+
+    <div class="menu-col menu-col--cacao" data-reveal>
+      <h3>Côté chocolat</h3>
+      <div class="item">
+        <span><span class="item-name">Chocolat chaud</span><span class="item-desc">Ganache fondue, non sucrée</span></span>
+        <span class="item-price">4,90 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Mendiants</span><span class="item-desc">Amandes, noisettes, écorces d'orange</span></span>
+        <span class="item-price">3,50 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Truffes maison</span><span class="item-desc">Cacao 65%, fleur de sel — la boîte de 4</span></span>
+        <span class="item-price">7,00 €</span>
+      </div>
+      <div class="item">
+        <span><span class="item-name">Tablette du mois</span><span class="item-desc">Origine unique, torréfaction artisanale</span></span>
+        <span class="item-price">6,50 €</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="histoire" id="histoire">
+  <div class="histoire-visual" role="img" aria-label="Illustration abstraite représentant un partage égal entre café et chocolat" data-reveal></div>
+  <div class="histoire-text" data-reveal>
+    <span class="eyebrow">L'histoire</span>
+    <h2>On nous demandait toujours de choisir.</h2>
+    <p>Chocafé est né d'un désaccord amical : d'un côté, une obsession pour le café de spécialité ; de l'autre, une adresse dans le chocolat de couverture. Plutôt que de trancher, on a ouvert une carte à deux entrées.</p>
+    <p>Chaque boisson est pensée comme un dosage, pas comme un choix. Le comptoir a deux torréfacteurs, deux fondoirs, et une seule règle : jamais l'un ne doit dominer l'autre sans qu'on le décide ensemble, en salle, tasse après tasse.</p>
+  </div>
+</section>
+
+<footer id="visite">
+  <div class="footer-grid">
+    <div class="footer-brand" data-reveal>
+      <span class="logo">Choca<span style="font-style:italic; font-weight:300;">fé</span></span>
+      <p>Un comptoir où le café et le chocolat se partagent chaque tasse à parts égales.</p>
+    </div>
+    <div class="footer-col" data-reveal>
+      <h4>Nous trouver</h4>
+      <p>14 rue des Blancs-Manteaux<br>75004 Paris</p>
+      <a href="https://maps.google.com" target="_blank" rel="noopener">Voir sur la carte →</a>
+    </div>
+    <div class="footer-col" data-reveal>
+      <h4>Horaires</h4>
+      <p>Lun – Ven : 8h00 – 19h00</p>
+      <p>Sam – Dim : 9h00 – 20h00</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Chocafé</span>
+    <span>Fait à parts égales, à Paris</span>
+  </div>
+</footer>
+
+<script>
+  // --- blend slider ---
+  const slider = document.getElementById('blendSlider');
+  const root = document.documentElement;
+  const fig = document.getElementById('splitFig');
+
+  function update(val){
+    root.style.setProperty('--split', val);
+    const coffee = parseInt(val, 10);
+    const cacao = 100 - coffee;
+    fig.textContent = coffee + '% café — ' + cacao + '% chocolat';
+  }
+  slider.addEventListener('input', (e) => update(e.target.value));
+  update(slider.value);
+
+  // --- cursor spotlight in hero ---
+  const hero = document.querySelector('.blend-hero');
+  hero.addEventListener('pointermove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width) * 100;
+    const my = ((e.clientY - rect.top) / rect.height) * 100;
+    hero.style.setProperty('--mx', mx + '%');
+    hero.style.setProperty('--my', my + '%');
+  });
+
+  // --- floating particles (bean-like dots) ---
+  const particleColors = ['#EAD583', '#9A5B3A', '#C79A2A', '#1D1109'];
+  for (let i = 0; i < 14; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 4 + Math.random() * 8;
+    p.style.width = size + 'px';
+    p.style.height = (size * 0.7) + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top = Math.random() * 100 + '%';
+    p.style.background = particleColors[Math.floor(Math.random() * particleColors.length)];
+    p.style.animationDuration = (5 + Math.random() * 6) + 's';
+    p.style.animationDelay = (Math.random() * -8) + 's';
+    hero.appendChild(p);
+  }
+
+  // --- scroll reveal ---
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach((el) => io.observe(el));
+
+  // --- subtle tilt on histoire visual ---
+  const visual = document.querySelector('.histoire-visual');
+  if (visual){
+    visual.addEventListener('pointermove', (e) => {
+      const rect = visual.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      visual.style.transform = `rotateY(${px * 8}deg) rotateX(${-py * 8}deg)`;
+    });
+    visual.addEventListener('pointerleave', () => {
+      visual.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+  }
+</script>
+
+</body>
+</html>
