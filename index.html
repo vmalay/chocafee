@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -260,13 +259,89 @@
     nav.links{display:none;}
     .concept-grid{gap:20px;}
   }
+
+  /* ---------- FUN STUFF ---------- */
+  .logo{cursor:pointer; transition:transform .15s ease;}
+  .logo:active{transform:scale(0.92) rotate(-4deg);}
+
+  .fact-btn{
+    background:none; border:1px dashed rgba(250,244,232,0.5); color:var(--foam);
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; text-transform:uppercase;
+    letter-spacing:0.05em; padding:10px 18px; border-radius:100px; cursor:pointer;
+    margin-top:8px; transition:border-color .2s ease, transform .2s ease;
+  }
+  .fact-btn:hover{border-color:var(--gold); transform:translateY(-1px);}
+  .fact-bubble{
+    max-width:420px; margin:14px auto 0; font-size:0.88rem; color:var(--gold);
+    opacity:0; transform:translateY(6px); transition:opacity .3s ease, transform .3s ease;
+    min-height:1.4em;
+  }
+  .fact-bubble.show{opacity:1; transform:translateY(0);}
+
+  .confetti-piece{
+    position:fixed; font-size:1.5rem; pointer-events:none; z-index:9999;
+    animation: floatUp 1.3s ease-out forwards;
+  }
+  @keyframes floatUp{
+    0%{transform:translate(0,0) rotate(0deg); opacity:1;}
+    100%{transform:translate(var(--dx), -180px) rotate(var(--rot)); opacity:0;}
+  }
+
+  .shake{animation:shake 0.5s ease;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-6px) rotate(-1deg);}
+    40%{transform:translateX(6px) rotate(1deg);}
+    60%{transform:translateX(-4px);}
+    80%{transform:translateX(4px);}
+  }
+
+  /* Team */
+  .team{background:var(--cream);}
+  .team-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;}
+  .team-card{
+    background:var(--foam); border-radius:18px; padding:26px 28px;
+    border:1px solid rgba(36,24,20,0.08);
+  }
+  .team-card .role{color:var(--coffee); font-weight:600; font-size:0.7rem;}
+  .team-card h3{font-size:1.2rem; margin:8px 0 2px;}
+  .team-card .who{font-size:0.82rem; opacity:0.6; margin-bottom:10px;}
+  .team-card p{font-size:0.9rem; line-height:1.55; opacity:0.85;}
+  @media (max-width:720px){ .team-grid{grid-template-columns:1fr;} }
+
+  /* Testimonials */
+  .avis{background:var(--foam);}
+  .avis-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
+  .avis-card{
+    padding:26px 28px; border-radius:18px; background:var(--cream);
+    position:relative;
+  }
+  .avis-card .stars{color:var(--gold); letter-spacing:2px; margin-bottom:10px; display:block;}
+  .avis-card p{font-size:0.95rem; line-height:1.55; margin-bottom:12px; font-style:italic;}
+  .avis-card .who{font-family:'JetBrains Mono', monospace; font-size:0.7rem; text-transform:uppercase; opacity:0.6;}
+  @media (max-width:720px){ .avis-grid{grid-template-columns:1fr;} }
+
+  /* FAQ */
+  .faq{background:var(--cream);}
+  .faq-item{
+    border-bottom:1px solid rgba(36,24,20,0.12); padding:22px 0;
+  }
+  .faq-item:first-child{border-top:1px solid rgba(36,24,20,0.12);}
+  .faq-item summary{
+    cursor:pointer; font-family:'Fraunces', serif; font-weight:600; font-size:1.08rem;
+    list-style:none; display:flex; justify-content:space-between; align-items:center;
+  }
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary::after{content:'+'; font-size:1.4rem; color:var(--coffee); transition:transform .2s ease;}
+  .faq-item[open] summary::after{transform:rotate(45deg);}
+  .faq-item p{margin-top:12px; font-size:0.95rem; line-height:1.6; opacity:0.85; max-width:640px;}
 </style>
 </head>
 <body>
 
 <header class="nav">
   <div class="nav-inner">
-    <div class="logo"><span class="c1">Choc</span><span class="c2">afé</span></div>
+    <div class="logo" id="logoEgg" title="Psst, cliquez-moi plusieurs fois."><span class="c1">Choc</span><span class="c2">afé</span></div>
     <nav class="links">
       <a href="#concept">Le concept</a>
       <a href="#carte">La carte</a>
@@ -290,9 +365,9 @@
   </svg>
 
   <div class="hero-inner">
-    <span class="eyebrow mono">Torréfacteur & chocolatier — même comptoir</span>
+    <span class="eyebrow mono">Torréfacteur le matin, chocolatier l'après-midi, indécis toute la journée</span>
     <h1 id="heroTitle">50% café, 50% chocolat,<br><em>100% Chocafé</em></h1>
-    <p class="lead">Le comptoir où l'arabica rencontre le cacao. Un même geste artisanal, deux matières premières, une seule adresse.</p>
+    <p class="lead">Le seul endroit où l'arabica et le cacao se supportent enfin.</p>
 
     <div class="dosage">
       <div class="dosage-labels">
@@ -307,6 +382,9 @@
       <a href="#carte" class="btn btn-primary">Voir la carte</a>
       <a href="#adresse" class="btn btn-ghost">Réserver une table</a>
     </div>
+
+    <button class="fact-btn" id="factBtn" type="button">🎲 Un fait inutile, s'il vous plaît</button>
+    <div class="fact-bubble" id="factBubble"></div>
   </div>
 
   <div class="scroll-cue"><span>Découvrir</span><div class="line"></div></div>
@@ -316,25 +394,66 @@
   <div class="wrap">
     <div class="section-head reveal">
       <span class="mono">Le concept</span>
-      <h2>Pourquoi couper la carte en deux ?</h2>
+      <h2>Pourquoi on a coupé la carte en deux</h2>
     </div>
     <div class="concept-grid">
       <div class="concept-text reveal">
-        <p>Chocafé est né d'un constat simple : le café et le cacao partagent la même origine tropicale, la même torréfaction, le même savoir-faire de fermentation. Pourtant, on les sert toujours séparément.</p>
-        <p>Ici, un seul comptoir accueille le torréfacteur et la chocolaterie. Les grains sont sélectionnés en binôme, cru par cru, pour que chaque boisson puisse pencher côté café, côté chocolat, ou pile au milieu.</p>
-        <p>Pas de compromis : deux métiers, pratiqués avec la même exigence, sous le même toit.</p>
+        <p>Chocafé est né d'un constat simple, formulé un mardi soir à 23h autour d'une tablette entamée : le café et le cacao sont juste bons, tous les deux, et il n'y avait aucune raison sérieuse de choisir. Deux plaisirs, pourquoi s'en priver d'un ?</p>
+        <p>Ici, un seul comptoir accueille le torréfacteur et la chocolaterie, contraints à la cohabitation. Les grains sont choisis en binôme, cru par cru, pour que chaque boisson puisse pencher côté café, côté chocolat, ou refuser catégoriquement de choisir.</p>
+        <p>Pas de compromis bâclé : deux métiers, pratiqués avec la même exigence maniaque, sous le même toit, souvent dans la même phrase.</p>
       </div>
       <div class="origin-cards reveal">
         <div class="origin-card coffee-card">
           <span class="mono">Côté café</span>
           <h3>Éthiopie & Colombie</h3>
-          <p>Lots micro-torréfiés chaque semaine, en petites quantités, pour préserver les notes fruitées des crus d'origine.</p>
+          <p>Lots micro-torréfiés chaque semaine, en petites quantités, pour préserver les notes fruitées et l'ego du torréfacteur.</p>
         </div>
         <div class="origin-card cacao-card">
           <span class="mono">Côté chocolat</span>
           <h3>Pérou & São Tomé</h3>
-          <p>Fèves de cacao trinitario, conchées sur place, transformées en tablettes, boissons et pâtisseries maison.</p>
+          <p>Fèves de cacao trinitario, conchées sur place, transformées en tablettes, boissons et excuses pour ne pas faire de sport.</p>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="team">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="mono">L'équipe</span>
+      <h2>Quatre personnes, un chat, zéro consensus sur le vrai dosage</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card reveal">
+        <span class="role mono">Doseuse en cheffe</span>
+        <h3>Maylis</h3>
+        <div class="who">Gardienne du ratio secret</div>
+        <p>Seule à connaître la vraie recette du Signature. Interrogée à coups de carrés de chocolat noir 90%, elle a tenu bon.</p>
+      </div>
+      <div class="team-card reveal">
+        <span class="role mono">Torréfacteur somnambule</span>
+        <h3>Karim</h3>
+        <div class="who">Arrive à 5h, repart à 14h</div>
+        <p>Ne se souvient jamais du trajet jusqu'ici. Reconnaît les origines de café à l'odeur, les jours de la semaine beaucoup moins.</p>
+      </div>
+      <div class="team-card reveal">
+        <span class="role mono">Chocolatière-poète</span>
+        <h3>Inès</h3>
+        <div class="who">Nomme chaque ganache comme un signe astrologique</div>
+        <p>Pour elle, le Mocha Marbré est un Scorpion ascendant Cortado. On a arrêté de lui demander pourquoi.</p>
+      </div>
+      <div class="team-card reveal">
+        <span class="role mono">Goûteur officiel</span>
+        <h3>Nino</h3>
+        <div class="who">Chat de la maison, non rémunéré</div>
+        <p>Vote systématiquement chocolat, refuse tout café. La démocratie interne a été suspendue jusqu'à nouvel ordre.</p>
+      </div>
+      <div class="team-card reveal">
+        <span class="role mono">Livreur de bonne humeur</span>
+        <h3>Théo LaPierre</h3>
+        <div class="who">Habite à Troyes, vient quand même tous les jours</div>
+        <p>Fait la navette Troyes-Paris chaque matin pour un café qu'il pourrait techniquement boire chez lui. On ne discute pas, on est flattés.</p>
       </div>
     </div>
   </div>
@@ -354,7 +473,7 @@
           <div class="dose-track"><div class="marker" style="left:50%"></div></div>
           <div class="dose-caption">50 / 50</div>
         </div>
-        <div class="desc">Espresso et chocolat trinitario fondu, montés ensemble à la vapeur, sans sucre ajouté.</div>
+        <div class="desc">Espresso et chocolat trinitario fondu, montés ensemble à la vapeur, sans sucre ajouté. Le seul couple de la maison qui n'a jamais eu besoin de thérapie.</div>
         <div class="price">6,50 €</div>
       </div>
 
@@ -364,7 +483,7 @@
           <div class="dose-track"><div class="marker" style="left:12%"></div></div>
           <div class="dose-caption">Plutôt café</div>
         </div>
-        <div class="desc">Double espresso, lait micro-moussé, une pointe de copeaux de cacao en surface.</div>
+        <div class="desc">Double espresso, lait micro-moussé, une pointe de copeaux de cacao en surface. Court en durée, long en engagement.</div>
         <div class="price">4,20 €</div>
       </div>
 
@@ -374,7 +493,7 @@
           <div class="dose-track"><div class="marker" style="left:65%"></div></div>
           <div class="dose-caption">Légèrement chocolat</div>
         </div>
-        <div class="desc">Ganache maison, espresso, lait chaud, marbré à la commande devant vous.</div>
+        <div class="desc">Ganache maison, espresso, lait chaud, marbré à la commande devant vous. Ni le café ni le chocolat ne veulent porter le chapeau.</div>
         <div class="price">5,80 €</div>
       </div>
 
@@ -384,7 +503,7 @@
           <div class="dose-track"><div class="marker" style="left:92%"></div></div>
           <div class="dose-caption">100% chocolat</div>
         </div>
-        <div class="desc">Cacao 70% fondu au lait entier, sans poudre, servi avec un carré à tremper.</div>
+        <div class="desc">Cacao 70% fondu au lait entier, sans poudre, servi avec un carré à tremper. Le doudou liquide, format tasse.</div>
         <div class="price">5,50 €</div>
       </div>
 
@@ -394,10 +513,41 @@
           <div class="dose-track"><div class="marker" style="left:80%"></div></div>
           <div class="dose-caption">Plutôt chocolat</div>
         </div>
-        <div class="desc">Tablette noir 70%, fèves de cacao torréfiées et grains de café concassés.</div>
+        <div class="desc">Tablette noir 70%, fèves de cacao torréfiées et grains de café concassés. Le seul mendiant qu'on vous encourage à ramener chez vous.</div>
         <div class="price">4,00 €</div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<section class="avis">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="mono">Ils sont venus, ils ont dosé</span>
+      <h2>Avis clients (non vérifiés, mais sincères)</h2>
+    </div>
+    <div class="avis-grid">
+      <div class="avis-card reveal">
+        <span class="stars">★★★★★</span>
+        <p>"Mon dentiste ne me recommande pas cet endroit. C'est plutôt bon signe, non ?"</p>
+        <div class="who">— Julien, client du mardi</div>
+      </div>
+      <div class="avis-card reveal">
+        <span class="stars">★★★★★</span>
+        <p>"Venue pour le café, repartie accro au chocolat. Ma carte bancaire n'a pas suivi le rythme."</p>
+        <div class="who">— Salomé</div>
+      </div>
+      <div class="avis-card reveal">
+        <span class="stars">★★★★☆</span>
+        <p>"J'ai mis le curseur à 100% chocolat et le serveur m'a fait un clin d'œil complice. Je me suis senti vu."</p>
+        <div class="who">— Anonyme, pour l'instant</div>
+      </div>
+      <div class="avis-card reveal">
+        <span class="stars">★★★★★</span>
+        <p>"Moins cher que ma thérapie, presque aussi efficace, et il y a un chat."</p>
+        <div class="who">— Un habitué qui préfère ne pas être cité</div>
+      </div>
     </div>
   </div>
 </section>
@@ -407,9 +557,9 @@
     <div class="espace-grid">
       <div class="espace-text reveal">
         <span class="mono" style="color:var(--coffee); display:block; margin-bottom:14px;">L'espace</span>
-        <h2 style="margin-bottom:22px; font-size:clamp(1.8rem,3vw,2.4rem);">Un comptoir, deux ateliers visibles</h2>
-        <p>D'un côté, le torréfacteur tourne chaque matin dès 7h. De l'autre, la plonge à chocolat conche et tempère à vue. Entre les deux, le bar où les deux mondes se mélangent, tasse après tasse.</p>
-        <p>28 places assises, une grande table d'hôte en chêne brûlé, et une vitrine commune pour les grains de café et les fèves de cacao du moment.</p>
+        <h2 style="margin-bottom:22px; font-size:clamp(1.8rem,3vw,2.4rem);">Un comptoir, deux ateliers visibles, une seule machine à café qui fait grève une fois par mois</h2>
+        <p>D'un côté, le torréfacteur tourne chaque matin dès 7h, sourd à toute conversation avant son propre café. De l'autre, la plonge à chocolat conche et tempère à vue, sans jamais lever les yeux. Entre les deux, le bar où les deux mondes finissent toujours par se mélanger, tasse après tasse.</p>
+        <p>28 places assises, une grande table d'hôte en chêne brûlé qui a connu plus de premiers rendez-vous que nous n'osons l'admettre, et une vitrine commune pour les grains de café et les fèves de cacao du moment.</p>
       </div>
       <div class="espace-visual reveal" aria-hidden="true">
         <svg viewBox="0 0 400 400">
@@ -422,12 +572,43 @@
   </div>
 </section>
 
+<section class="faq">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="mono">Questions fréquentes</span>
+      <h2>Ce qu'on nous demande (souvent en chuchotant)</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item reveal">
+        <summary>Peut-on commander 100% café, sans une once de chocolat ?</summary>
+        <p>Oui, absolument. On vous servira avec le sourire, et une très légère déception dans le regard.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Le nom "Chocafé", c'est vous qui l'avez trouvé ?</summary>
+        <p>On aimerait dire que c'est venu en une nuit d'inspiration. En vrai, on a passé trois semaines sur un tableur. "Chococafé" a perdu au dernier tour, de justesse.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Vous avez un café sans caféine ?</summary>
+        <p>Oui. On l'appelle "le chocolat chaud".</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Le chat du café, il mord ?</summary>
+        <p>Seulement si vous commandez du 100% chocolat sans lui en proposer une goutte. Sinon, il est parfaitement pacifique.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Peut-on venir juste pour poser le curseur sur 50/50 et repartir ?</summary>
+        <p>Techniquement oui. Émotionnellement, on préférerait que vous restiez boire quelque chose.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
 <footer id="adresse">
   <div class="wrap">
     <div class="footer-grid">
       <div class="foot-col">
         <h3>Passez doser votre journée.</h3>
-        <p class="lead-foot">Ouvert tous les jours, du premier espresso au dernier chocolat chaud.</p>
+        <p class="lead-foot">Ouvert tous les jours, du premier espresso à la dernière excuse crédible pour ne pas rentrer chez soi.</p>
         <div class="newsletter">
           <input type="email" placeholder="Votre email">
           <button type="button">S'inscrire →</button>
@@ -447,7 +628,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 Chocafé — Paris</span>
-      <span>Torréfacteur & chocolatier artisanal</span>
+      <span>Aucun grain n'a été maltraité pendant la fabrication de ce site. Le développeur, en revanche...</span>
     </div>
   </div>
 </footer>
@@ -460,6 +641,8 @@
   const readout = document.getElementById('mixReadout');
   const title = document.getElementById('heroTitle');
 
+  let confettiFired = false;
+
   function updateMix(val){
     const v = Number(val);
     // seam position 20%..80% based on slider (0..100)
@@ -469,16 +652,90 @@
     panelCacao.style.clipPath = `polygon(${seam+wobble/2}% 0, 100% 0, 100% 100%, ${seam-wobble/2}% 100%)`;
 
     let label, heading;
-    if(v <= 20){ label = `Votre dosage : ${100-v} / ${v} — franchement café`; heading = `Plutôt café<br><em>avec un soupçon de chocolat</em>`; }
+    if(v === 0){ label = `0 / 100 — le café, rien que le café, toujours le café`; heading = `Puriste absolu.<br><em>Respect, mais on juge un peu</em>`; }
+    else if(v === 100){ label = `100 / 0 — le chocolat a gagné, sans débat`; heading = `Chocolat total.<br><em>On ne juge pas. (Si, un peu)</em>`; }
+    else if(v <= 20){ label = `Votre dosage : ${100-v} / ${v} — franchement café`; heading = `Plutôt café<br><em>avec un soupçon de chocolat</em>`; }
     else if(v >= 80){ label = `Votre dosage : ${100-v} / ${v} — franchement chocolat`; heading = `Plutôt chocolat<br><em>avec un soupçon de café</em>`; }
+    else if(v === 50){ label = `🎉 50 / 50 — L'ÉQUILIBRE PARFAIT. Aristote en aurait pleuré (de joie, il adorait le chocolat chaud)`; heading = `50% café, 50% chocolat,<br><em>100% Chocafé</em>`; }
     else if(v > 45 && v < 55){ label = `Votre dosage : 50 / 50 — l'équilibre Chocafé`; heading = `50% café, 50% chocolat,<br><em>100% Chocafé</em>`; }
     else if(v < 50){ label = `Votre dosage : ${100-v} / ${v} — un peu plus café`; heading = `Un peu plus café,<br><em>toujours du chocolat</em>`; }
     else { label = `Votre dosage : ${100-v} / ${v} — un peu plus chocolat`; heading = `Un peu plus chocolat,<br><em>toujours du café</em>`; }
     readout.textContent = label;
     title.innerHTML = heading;
+
+    if(v === 50 && !confettiFired){
+      confettiFired = true;
+      burstConfetti(slider);
+    } else if(v !== 50){
+      confettiFired = false;
+    }
   }
   slider.addEventListener('input', (e) => updateMix(e.target.value));
   updateMix(50);
+
+  // --- confetti burst ---
+  function burstConfetti(anchorEl){
+    const rect = anchorEl.getBoundingClientRect();
+    const emojis = ['☕','🍫','✨'];
+    for(let i=0; i<18; i++){
+      const piece = document.createElement('span');
+      piece.className = 'confetti-piece';
+      piece.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      const startX = rect.left + Math.random()*rect.width;
+      const startY = rect.top;
+      piece.style.left = startX + 'px';
+      piece.style.top = startY + 'px';
+      piece.style.setProperty('--dx', (Math.random()*160-80) + 'px');
+      piece.style.setProperty('--rot', (Math.random()*360-180) + 'deg');
+      piece.style.animationDelay = (Math.random()*0.15) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 1600);
+    }
+  }
+
+  // --- logo easter egg ---
+  const logoEgg = document.getElementById('logoEgg');
+  let logoClicks = 0;
+  logoEgg.addEventListener('click', () => {
+    logoClicks++;
+    logoEgg.classList.remove('shake');
+    void logoEgg.offsetWidth;
+    logoEgg.classList.add('shake');
+    if(logoClicks === 6){
+      burstConfetti(logoEgg);
+    }
+    if(logoClicks >= 10){
+      logoClicks = 0;
+    }
+  });
+
+  // --- random fun facts ---
+  const facts = [
+    "Le cacaoyer et le caféier poussent tous les deux dans ce qu'on appelle sérieusement la « ceinture tropicale ». Personne ne les a présentés avant nous.",
+    "Un espresso contient en moyenne moins de caféine qu'une tasse de café filtre. Personne ne nous croit, on le dit quand même.",
+    "Le chocolat blanc n'est techniquement pas du chocolat, faute de cacao. On en vend quand même, on n'est pas des intégristes.",
+    "Notre torréfacteur a un jour confondu un sac de fèves de cacao avec un sac de café. Le mélange obtenu par erreur est... notre boisson la plus vendue.",
+    "En moyenne, un client met 4 minutes et 32 secondes à choisir sa position sur le curseur. On a chronométré. On ne sait pas pourquoi.",
+    "Nino le chat a goûté du café une fois en 2023. Il ne nous a jamais pardonnés.",
+    "'Mocha' vient du port yéménite de Moka. Personne ne s'attendait à un cours de géographie ici, nous non plus."
+  ];
+  let lastFact = -1;
+  const factBtn = document.getElementById('factBtn');
+  const factBubble = document.getElementById('factBubble');
+  factBtn.addEventListener('click', () => {
+    let idx;
+    do { idx = Math.floor(Math.random()*facts.length); } while(idx === lastFact && facts.length > 1);
+    lastFact = idx;
+    factBubble.classList.remove('show');
+    setTimeout(() => {
+      factBubble.textContent = facts[idx];
+      factBubble.classList.add('show');
+    }, 150);
+  });
+
+  // --- console easter egg for curious developers ---
+  console.log('%c☕ + 🍫 = ❤️', 'font-size:20px;');
+  console.log('Psst. Le vrai ratio secret est dans la variable CSS --mix. On ne vous a rien dit.');
 
   // --- scroll reveal ---
   const revealEls = document.querySelectorAll('.reveal');
