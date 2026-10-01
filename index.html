@@ -597,7 +597,7 @@
   .game-btn-ghost{background:none; border:1px solid rgba(250,244,232,0.4); color:var(--foam);}
   .game-btn[hidden]{display:none;}
   .game-ratio .dose-track .target{
-    position:absolute; top:50%; height:16px; width:16.6%; transform:translate(-50%,-50%);
+    position:absolute; top:50%; height:16px; width:25%; transform:translate(-50%,-50%);
     border:1.5px dashed var(--gold); border-radius:6px; transition:left .4s ease;
   }
   .game-ratio .caption .order{color:var(--gold); opacity:1; text-align:center;}
@@ -915,13 +915,13 @@
         </div>
         <div class="game-hud">
           <div>Score<strong id="hudScore">0</strong></div>
-          <div>Tasses<strong id="hudCups">0</strong></div>
+          <div>Niveau<strong id="hudLevel">1</strong></div>
           <div>Combo<strong id="hudCombo">×1</strong></div>
           <div>Vies<strong id="hudLives">☕☕☕</strong></div>
           <div>Record<strong id="hudBest">0</strong></div>
         </div>
         <div class="game-ratio">
-          <div class="caption"><span>Café <b id="hudCafe">0</b>/<i id="hudCafeGoal">6</i></span><span class="order" id="hudOrder">Chocafé Signature</span><span><b id="hudChoco">0</b>/<i id="hudChocoGoal">6</i> Chocolat</span></div>
+          <div class="caption"><span>Café <b id="hudCafe">0</b>/<i id="hudCafeGoal">4</i></span><span class="order" id="hudOrder">Chocafé Signature</span><span><b id="hudChoco">0</b>/<i id="hudChocoGoal">4</i> Chocolat</span></div>
           <div class="dose-track"><div class="target" id="hudTarget" style="left:50%"></div><div class="marker" id="hudMarker" style="left:50%"></div></div>
         </div>
       </div>
@@ -929,14 +929,14 @@
         <details class="rules-box" id="rulesBox" open>
         <summary>Règles du jeu</summary>
         <ul class="rules">
-          <li><span class="ico">🧾</span><span><strong>La commande</strong> : le ticket en haut indique la boisson à préparer, tirée de la carte (Signature 6/6, Cortado 9/3, Mocha 5/7…). La jauge sous le jeu montre la cible.</span></li>
-          <li><span class="ico">⚖️</span><span><strong>Service</strong> : à 12 ingrédients, la tasse part. Dosage exact = Fusion parfaite (100 pts × combo). Un ingrédient d'écart = 50 pts, deux = 20 pts. Au-delà : imbuvable, une vie en moins.</span></li>
-          <li><span class="ico">🔥</span><span><strong>Mode Fusion</strong> : trois tasses parfaites d'affilée et les points doublent. Toutes les 5 tasses parfaites, une vie revient.</span></li>
+          <li><span class="ico">🧾</span><span><strong>La commande</strong> : le ticket en haut indique la boisson à préparer, tirée de la carte (Signature 4/4, Cortado 6/2, Mocha 3/5…). La jauge sous le jeu montre la cible.</span></li>
+          <li><span class="ico">⚖️</span><span><strong>Service</strong> : à 8 ingrédients, la tasse part. Dosage exact = Fusion parfaite (100 pts × combo). Un ingrédient d'écart = 50 pts, deux = 20 pts. Au-delà : imbuvable, une vie en moins.</span></li>
+          <li><span class="ico">🔥</span><span><strong>Mode Fusion</strong> : trois tasses parfaites d'affilée et les points doublent. Toutes les 3 tasses parfaites, une vie revient.</span></li>
           <li><span class="ico">✨</span><span><strong>Grain doré de Théo</strong> : rééquilibre la tasse selon la commande, +50 pts. Théo Lapierre l'a ajouté « pour les jours sans ».</span></li>
           <li><span class="ico">🍦</span><span><strong>Chantilly</strong> : tasse XXL pendant 8 s. <strong>⏳ Sablier</strong> : tout ralentit pendant 6 s.</span></li>
           <li><span class="ico">🧊</span><span><strong>Glaçon</strong> : un Chocafé froid ? Jamais. −1 vie. <strong>🌶️ Piment</strong> : commandes inversées pendant 5 s.</span></li>
         </ul>
-        <p class="rules-note">Un nouveau niveau toutes les 3 tasses : ça accélère, puis les ingrédients se mettent à danser. Battez le record de Théo et montrez votre score au comptoir : « Le Lapierre » vous est offert. (Il dit avoir fait 4 200. On n'a jamais vu la capture.)</p>
+        <p class="rules-note">Un nouveau niveau toutes les 15 secondes : ça accélère, le piment arrive au niveau 2, puis les ingrédients se mettent à danser. Une partie dure une à trois minutes. Battez le record de Théo et montrez votre score au comptoir : « Le Lapierre » vous est offert. (Il dit avoir fait 4 200. On n'a jamais vu la capture.)</p>
         </details>
       </div>
     </div>
@@ -1151,7 +1151,7 @@
     const muteBtn = document.getElementById('gameMute');
     const toast = document.getElementById('gameToast');
     const hud = {
-      score: document.getElementById('hudScore'), cups: document.getElementById('hudCups'),
+      score: document.getElementById('hudScore'), level: document.getElementById('hudLevel'),
       combo: document.getElementById('hudCombo'), lives: document.getElementById('hudLives'),
       best: document.getElementById('hudBest'), cafe: document.getElementById('hudCafe'),
       choco: document.getElementById('hudChoco'), cafeGoal: document.getElementById('hudCafeGoal'),
@@ -1159,19 +1159,19 @@
       marker: document.getElementById('hudMarker'), target: document.getElementById('hudTarget')
     };
 
-    const W = 400, H = 500, CAPACITY = 12, CUP_Y = H - 70, CUP_W = 84, CUP_W_WIDE = 132;
+    const W = 400, H = 500, CAPACITY = 8, LEVEL_EVERY = 15, CUP_Y = H - 70, CUP_W = 84, CUP_W_WIDE = 132;
     const COLORS = {
       cafe:'#9A6634', choco:'#5E3A36', gold:'#C89B5C', goldLight:'#F1D29A', foam:'#FAF4E8',
       ice:'#BFE3F2', red:'#E0533D', cream:'#FFF8EC'
     };
-    // every order is a drink from the menu: number of coffee doses out of 12
+    // every order is a drink from the menu: number of coffee doses out of CAPACITY
     const ORDERS = [
-      { name:'Chocafé Signature', cafe:6 },
-      { name:"Cortado d'Éthiopie", cafe:9 },
-      { name:'Mocha marbré', cafe:5 },
-      { name:'Chocolat de São Tomé', cafe:2 },
-      { name:'Le Lapierre', cafe:6 },
-      { name:'Mendiant du torréfacteur', cafe:4 }
+      { name:'Chocafé Signature', cafe:4 },
+      { name:"Cortado d'Éthiopie", cafe:6 },
+      { name:'Mocha marbré', cafe:3 },
+      { name:'Chocolat de São Tomé', cafe:1 },
+      { name:'Le Lapierre', cafe:4 },
+      { name:'Mendiant du torréfacteur', cafe:2 }
     ];
     const THEO_RECORD = 4200;
     const BEST_KEY = 'chocafe-fusion-best', MUTE_KEY = 'chocafe-fusion-muted';
@@ -1260,7 +1260,7 @@
       return {
         cupX: W/2, cupW: CUP_W, cupVX: 0, items: [], spawnTimer: 0.4,
         layers: [], score: 0, cups: 0, perfects: 0, combo: 1, lives: 3, level: 1,
-        order: ORDERS[0], ticketT: 0, speed: 120, spawnEvery: 0.85,
+        order: ORDERS[0], ticketT: 0, speed: 150, spawnEvery: 0.7, levelTimer: 0,
         effects: { wide: 0, slow: 0, reverse: 0 },
         particles: [], floaters: [], rings: [], steam: [], ghosts: [],
         shake: 0, flash: null, banner: null, countdown: 3, time: 0, fever: false
@@ -1276,7 +1276,7 @@
     function updateHud(){
       const { cafe, choco } = counts();
       hud.score.textContent = state.score;
-      hud.cups.textContent = state.cups;
+      hud.level.textContent = state.level;
       hud.combo.textContent = '×' + state.combo;
       hud.lives.textContent = '☕'.repeat(state.lives) + '·'.repeat(Math.max(0, 3 - state.lives));
       hud.cafe.textContent = cafe;
@@ -1287,6 +1287,7 @@
       const total = cafe + choco;
       hud.marker.style.left = (total ? (choco / total) * 100 : 50) + '%';
       hud.target.style.left = ((CAPACITY - state.order.cafe) / CAPACITY) * 100 + '%';
+      hud.target.style.width = (2 / CAPACITY) * 100 + '%';
     }
 
     function showToast(text){
@@ -1318,10 +1319,10 @@
         ['cafe', 30 + 24 * lean],
         ['choco', 30 + 24 * (1 - lean)],
         ['theo', state.fever ? 7 : 3.5],
-        ['cream', lvl >= 2 ? 3 : 0],
-        ['slow', lvl >= 2 ? 3 : 0],
-        ['ice', lvl >= 2 ? 3 + lvl : 0],
-        ['chili', lvl >= 3 ? 2 + lvl / 2 : 0]
+        ['cream', 3],
+        ['slow', 3],
+        ['ice', 5 + lvl * 3],
+        ['chili', lvl >= 2 ? 3 + lvl : 0]
       ];
       let r = Math.random() * table.reduce((sum, [, w]) => sum + w, 0);
       for(const [type, w] of table){ if((r -= w) < 0) return type; }
@@ -1332,12 +1333,12 @@
       state.items.push({
         type: pickType(), x: rand(26, W - 26), y: -24,
         vy: state.speed * rand(0.85, 1.2), rot: rand(0, Math.PI), vr: rand(-1.5, 1.5),
-        phase: rand(0, 6), sway: state.level >= 4 ? rand(20, 50) : 0
+        phase: rand(0, 6), sway: state.level >= 3 ? rand(20, 30 + state.level * 6) : 0
       });
     }
 
     function nextOrder(){
-      if(state.cups < 2) return ORDERS[0];
+      if(state.cups < 1) return ORDERS[0];
       let order;
       do { order = ORDERS[Math.floor(Math.random() * ORDERS.length)]; } while(order === state.order && Math.random() < 0.7);
       return order;
@@ -1432,7 +1433,7 @@
         vibrate(25);
         burstConfetti(frame);
         sfx('perfect');
-        if(state.perfects % 5 === 0 && state.lives < 3){
+        if(state.perfects % 3 === 0 && state.lives < 3){
           state.lives++;
           floater('+1 vie ☕', x, y - 44, COLORS.foam, 20);
         }
@@ -1460,17 +1461,19 @@
         if(!running) return;
       }
 
-      const level = 1 + Math.floor(state.cups / 3);
-      if(level > state.level){
-        state.level = level;
-        const news = { 2: 'Glaçons, chantilly et sabliers arrivent', 3: 'Attention au piment', 4: 'Les ingrédients dansent' };
-        state.banner = { title: `Niveau ${level}`, sub: news[level] || 'Ça accélère encore…', t: 0 };
-        setTimeout(() => { if(running) sfx('level'); }, 350);
-      }
-      state.speed = Math.min(120 + state.cups * 12, 380);
-      state.spawnEvery = Math.max(0.85 - state.cups * 0.035, 0.34);
       state.order = nextOrder();
       state.ticketT = 0;
+    }
+
+    function levelUp(){
+      const level = ++state.level;
+      const news = { 2: 'Le piment débarque', 3: 'Les ingrédients dansent', 4: 'Pluie de glaçons', 5: 'Vitesse espresso' };
+      state.banner = { title: `Niveau ${level}`, sub: news[level] || 'Ça accélère encore…', t: 0 };
+      state.speed = Math.min(150 + (level - 1) * 40, 470);
+      state.spawnEvery = Math.max(0.7 - (level - 1) * 0.06, 0.26);
+      flash(COLORS.goldLight, 0.2);
+      sfx('level');
+      updateHud();
     }
 
     function rankFor(score){
@@ -1620,6 +1623,13 @@
         if(state.countdown <= 0) sfx('go');
         else if(after !== before) sfx('tick');
         return;
+      }
+
+      // a new level every LEVEL_EVERY seconds: a game lasts one to three minutes
+      state.levelTimer += dt;
+      if(state.levelTimer >= LEVEL_EVERY){
+        state.levelTimer = 0;
+        levelUp();
       }
 
       const slow = state.effects.slow > 0 ? 0.45 : 1;
@@ -1913,6 +1923,12 @@
           ctx.fillText(f.text, f.x, f.y);
         });
         ctx.globalAlpha = 1;
+
+        // progress towards the next level
+        ctx.fillStyle = 'rgba(250,244,232,0.12)';
+        ctx.fillRect(0, 0, W, 4);
+        ctx.fillStyle = COLORS.gold;
+        ctx.fillRect(0, 0, W * (state.levelTimer / LEVEL_EVERY), 4);
 
         drawTicket();
         drawEffects();
