@@ -335,6 +335,74 @@
   .faq-item summary::after{content:'+'; font-size:1.4rem; color:var(--coffee); transition:transform .2s ease;}
   .faq-item[open] summary::after{transform:rotate(45deg);}
   .faq-item p{margin-top:12px; font-size:0.95rem; line-height:1.6; opacity:0.85; max-width:640px;}
+
+  /* Créateur */
+  .createur{background:var(--foam); padding-bottom:40px;}
+  .createur-card{
+    display:grid; grid-template-columns:auto 1fr; gap:40px; align-items:start;
+    padding:44px 48px; border-radius:24px; color:var(--foam);
+    background:linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-dark) 49%, var(--cacao-dark) 51%, var(--cacao-dark) 100%);
+  }
+  .createur-monogram{
+    width:110px; height:110px; border-radius:50%; display:grid; place-items:center;
+    font-family:'Fraunces', serif; font-size:2.4rem; font-weight:700; color:var(--ink);
+    background:radial-gradient(circle at 35% 30%, #E7C48D, var(--gold));
+    box-shadow:0 0 0 6px rgba(200,155,92,0.25);
+  }
+  .createur-card .mono{color:var(--gold); display:block; margin-bottom:12px;}
+  .createur-card h2{font-size:clamp(1.6rem, 3vw, 2.2rem); line-height:1.15; margin-bottom:18px;}
+  .createur-card p{line-height:1.7; opacity:0.88; margin-bottom:16px; max-width:640px;}
+  .createur-card blockquote{
+    font-family:'Fraunces', serif; font-style:italic; font-size:1.15rem; color:var(--gold);
+    border-left:2px solid var(--gold); padding-left:18px; margin-top:22px; max-width:600px;
+  }
+  .createur-card cite{display:block; margin-top:8px; font-family:'JetBrains Mono', monospace; font-style:normal; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--foam); opacity:0.7;}
+  @media (max-width:720px){
+    .createur-card{grid-template-columns:1fr; padding:32px 24px; gap:24px;}
+    .createur-monogram{width:80px; height:80px; font-size:1.8rem;}
+  }
+
+  /* Jeu : La Fusion */
+  .jeu{background:var(--cacao-dark); color:var(--foam);}
+  .jeu .section-head .mono{color:var(--gold);}
+  .jeu .section-head p{margin-top:16px; line-height:1.6; opacity:0.8;}
+  .jeu-grid{display:grid; grid-template-columns:minmax(0, 420px) 1fr; gap:48px; align-items:start;}
+  .game-frame{
+    position:relative; width:100%; aspect-ratio:4/5; border-radius:20px; overflow:hidden;
+    border:1px solid rgba(250,244,232,0.15); touch-action:none; user-select:none;
+  }
+  .game-frame canvas{display:block; width:100%; height:100%;}
+  .game-overlay{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:28px; gap:14px; background:rgba(36,19,19,0.82); backdrop-filter:blur(3px);
+  }
+  .game-overlay[hidden]{display:none;}
+  .game-overlay h3{font-size:1.7rem; line-height:1.15;}
+  .game-overlay p{font-size:0.92rem; line-height:1.5; opacity:0.85; max-width:300px;}
+  .game-overlay .rank{font-family:'Fraunces', serif; font-style:italic; color:var(--gold); font-size:1.15rem;}
+  .game-btn{
+    background:var(--gold); color:var(--ink); border:none; cursor:pointer; font-family:'Work Sans', sans-serif;
+    font-weight:600; font-size:0.95rem; padding:13px 26px; border-radius:100px; transition:transform .2s ease;
+  }
+  .game-btn:hover{transform:translateY(-2px);}
+  .game-hud{display:flex; justify-content:space-between; gap:12px; margin-top:16px; flex-wrap:wrap;}
+  .game-hud div{font-family:'JetBrains Mono', monospace; font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em;}
+  .game-hud strong{display:block; font-size:1.2rem; color:var(--gold); font-weight:500; margin-top:4px;}
+  .game-ratio{margin-top:14px;}
+  .game-ratio .dose-track{width:100%; height:8px; margin-top:8px;}
+  .game-ratio .dose-track .marker{transition:left .2s ease; border-color:var(--gold);}
+  .game-ratio .caption{display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:0.66rem; text-transform:uppercase; opacity:0.7;}
+  .game-toast{
+    position:absolute; left:50%; top:22%; transform:translate(-50%, 0); pointer-events:none;
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.4rem; color:var(--gold); text-align:center;
+    text-shadow:0 2px 10px rgba(0,0,0,0.6); opacity:0; transition:opacity .25s ease, transform .25s ease; width:90%;
+  }
+  .game-toast.show{opacity:1; transform:translate(-50%, -10px);}
+  .rules{list-style:none; display:flex; flex-direction:column; gap:14px;}
+  .rules li{display:grid; grid-template-columns:36px 1fr; gap:12px; align-items:start; line-height:1.55; font-size:0.95rem; opacity:0.9;}
+  .rules .ico{font-size:1.3rem; text-align:center;}
+  .rules-note{margin-top:26px; font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.04em; opacity:0.6; line-height:1.6;}
+  @media (max-width:860px){ .jeu-grid{grid-template-columns:1fr;} .game-frame{max-width:420px; margin:0 auto;} }
 </style>
 </head>
 <body>
@@ -345,6 +413,7 @@
     <nav class="links">
       <a href="#concept">Le concept</a>
       <a href="#carte">La carte</a>
+      <a href="#jeu">Le jeu</a>
       <a href="#espace">L'espace</a>
       <a href="#adresse">L'adresse</a>
     </nav>
@@ -367,7 +436,7 @@
   <div class="hero-inner">
     <span class="eyebrow mono">Torréfacteur le matin, chocolatier l'après-midi, indécis toute la journée</span>
     <h1 id="heroTitle">50% café, 50% chocolat,<br><em>100% Chocafé</em></h1>
-    <p class="lead">Le seul endroit où l'arabica et le cacao se supportent enfin.</p>
+    <p class="lead">Le seul endroit où l'arabica et le cacao se supportent enfin. Une idée folle signée Théo Lapierre.</p>
 
     <div class="dosage">
       <div class="dosage-labels">
@@ -398,7 +467,7 @@
     </div>
     <div class="concept-grid">
       <div class="concept-text reveal">
-        <p>Chocafé est né d'un constat simple, formulé un mardi soir à 23h autour d'une tablette entamée : le café et le cacao sont juste bons, tous les deux, et il n'y avait aucune raison sérieuse de choisir. Deux plaisirs, pourquoi s'en priver d'un ?</p>
+        <p>Chocafé est né dans la tête de <strong>Théo Lapierre</strong>, son créateur, d'un constat simple formulé un mardi soir à 23h autour d'une tablette entamée : le café et le cacao sont juste bons, tous les deux, et il n'y avait aucune raison sérieuse de choisir. Deux plaisirs, pourquoi s'en priver d'un ?</p>
         <p>Ici, un seul comptoir accueille le torréfacteur et la chocolaterie, contraints à la cohabitation. Les grains sont choisis en binôme, cru par cru, pour que chaque boisson puisse pencher côté café, côté chocolat, ou refuser catégoriquement de choisir.</p>
         <p>Pas de compromis bâclé : deux métiers, pratiqués avec la même exigence maniaque, sous le même toit, souvent dans la même phrase.</p>
       </div>
@@ -418,11 +487,26 @@
   </div>
 </section>
 
+<section class="createur" id="createur">
+  <div class="wrap">
+    <div class="createur-card reveal">
+      <div class="createur-monogram" aria-hidden="true">TL</div>
+      <div>
+        <span class="mono">Le créateur</span>
+        <h2>Théo Lapierre, l'homme qui a refusé de choisir</h2>
+        <p>Un matin à Troyes, Théo Lapierre s'est retrouvé devant deux tasses : un espresso et un chocolat chaud. Plutôt que de trancher, il a versé l'un dans l'autre. Le résultat était imbuvable, mais l'idée, elle, était parfaite. Quelques centaines de tests plus tard, Chocafé était né.</p>
+        <p>Aujourd'hui encore, il fait la navette Troyes-Paris chaque matin pour vérifier lui-même que le Signature respecte son 50/50 au gramme près. Il a aussi inventé le jeu de la maison, plus bas sur cette page. Son meilleur score reste un secret d'État.</p>
+        <blockquote>« Le café réveille, le chocolat console. Ensemble, ils vous rendent enfin raisonnable. »<cite>— Théo Lapierre, fondateur de Chocafé</cite></blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="team">
   <div class="wrap">
     <div class="section-head reveal">
       <span class="mono">L'équipe</span>
-      <h2>Quatre personnes, un chat, zéro consensus sur le vrai dosage</h2>
+      <h2>Quatre personnes, un créateur, un chat, zéro consensus sur le vrai dosage</h2>
     </div>
     <div class="team-grid">
       <div class="team-card reveal">
@@ -450,10 +534,10 @@
         <p>Vote systématiquement chocolat, refuse tout café. La démocratie interne a été suspendue jusqu'à nouvel ordre.</p>
       </div>
       <div class="team-card reveal">
-        <span class="role mono">Livreur de bonne humeur</span>
-        <h3>Théo LaPierre</h3>
+        <span class="role mono">Créateur &amp; fondateur</span>
+        <h3>Théo Lapierre</h3>
         <div class="who">Habite à Troyes, vient quand même tous les jours</div>
-        <p>Fait la navette Troyes-Paris chaque matin pour un café qu'il pourrait techniquement boire chez lui. On ne discute pas, on est flattés.</p>
+        <p>A eu l'idée de marier café et chocolat, puis a inventé le jeu de la maison. Fait la navette Troyes-Paris chaque matin pour un café qu'il pourrait techniquement boire chez lui. On ne discute pas, on est flattés.</p>
       </div>
     </div>
   </div>
@@ -509,6 +593,16 @@
 
       <div class="menu-item reveal">
         <div>
+          <h4>Le Lapierre</h4>
+          <div class="dose-track"><div class="marker" style="left:50%"></div></div>
+          <div class="dose-caption">50 / 50, version Troyes</div>
+        </div>
+        <div class="desc">La toute première recette de Théo Lapierre : ristretto, ganache noire et une pincée de fleur de sel, servi dans une tasse en grès. Offert à qui bat son score au jeu de la Fusion (on vérifie).</div>
+        <div class="price">6,90 €</div>
+      </div>
+
+      <div class="menu-item reveal">
+        <div>
           <h4>Mendiant du torréfacteur</h4>
           <div class="dose-track"><div class="marker" style="left:80%"></div></div>
           <div class="dose-caption">Plutôt chocolat</div>
@@ -552,6 +646,51 @@
   </div>
 </section>
 
+<section class="jeu" id="jeu">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="mono">Le jeu de la maison · inventé par Théo Lapierre</span>
+      <h2>La Fusion : remplissez la tasse parfaite</h2>
+      <p>Grains de café et carrés de chocolat tombent du comptoir. Attrapez-les avec votre tasse et visez le 50/50 exact. Trop de café, trop de chocolat : c'est imbuvable.</p>
+    </div>
+    <div class="jeu-grid">
+      <div>
+        <div class="game-frame" id="gameFrame">
+          <canvas id="gameCanvas" aria-label="Jeu La Fusion : déplacez la tasse pour attraper café et chocolat"></canvas>
+          <div class="game-toast" id="gameToast"></div>
+          <div class="game-overlay" id="gameOverlay">
+            <h3 id="overlayTitle">Prêt à doser ?</h3>
+            <p id="overlayText">Flèches ← → ou souris / doigt pour bouger la tasse. 12 ingrédients par tasse, le 6/6 est la perfection.</p>
+            <div class="rank" id="overlayRank"></div>
+            <button class="game-btn" id="gameStart" type="button">Lancer la Fusion</button>
+          </div>
+        </div>
+        <div class="game-hud">
+          <div>Score<strong id="hudScore">0</strong></div>
+          <div>Tasses<strong id="hudCups">0</strong></div>
+          <div>Combo<strong id="hudCombo">×1</strong></div>
+          <div>Vies<strong id="hudLives">☕☕☕</strong></div>
+          <div>Record<strong id="hudBest">0</strong></div>
+        </div>
+        <div class="game-ratio">
+          <div class="caption"><span>Café <b id="hudCafe">0</b></span><span>Tasse <b id="hudFill">0</b>/12</span><span><b id="hudChoco">0</b> Chocolat</span></div>
+          <div class="dose-track"><div class="marker" id="hudMarker" style="left:50%"></div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <ul class="rules">
+          <li><span class="ico">☕</span><span><strong>Grain de café</strong> : ajoute une dose de café dans la tasse.</span></li>
+          <li><span class="ico">🍫</span><span><strong>Carré de chocolat</strong> : ajoute une dose de chocolat. Esquivez ce dont vous n'avez pas besoin.</span></li>
+          <li><span class="ico">✨</span><span><strong>Grain doré de Théo</strong> : rare. Rééquilibre instantanément la tasse et rapporte 50 points. Théo Lapierre l'a ajouté « pour les jours sans ».</span></li>
+          <li><span class="ico">🧊</span><span><strong>Glaçon</strong> : un Chocafé froid ? Jamais. Vous perdez une vie si vous l'attrapez.</span></li>
+          <li><span class="ico">⚖️</span><span><strong>Service</strong> : à 12 ingrédients, la tasse part. 6/6 = Fusion parfaite (100 pts, combo +1). 5/7 = 50 pts. 4/8 = 20 pts. Au-delà : imbuvable, une vie en moins.</span></li>
+        </ul>
+        <p class="rules-note">Ça accélère à chaque tasse servie. Battez le record de Théo et montrez votre score au comptoir : « Le Lapierre » vous est offert. (Il dit avoir fait 4 200. On n'a jamais vu la capture.)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="espace" id="espace">
   <div class="wrap">
     <div class="espace-grid">
@@ -585,7 +724,7 @@
       </details>
       <details class="faq-item reveal">
         <summary>Le nom "Chocafé", c'est vous qui l'avez trouvé ?</summary>
-        <p>On aimerait dire que c'est venu en une nuit d'inspiration. En vrai, on a passé trois semaines sur un tableur. "Chococafé" a perdu au dernier tour, de justesse.</p>
+        <p>C'est Théo Lapierre, le créateur. On aimerait dire que c'est venu en une nuit d'inspiration. En vrai, on a passé trois semaines sur un tableur. "Chococafé" a perdu au dernier tour, de justesse.</p>
       </details>
       <details class="faq-item reveal">
         <summary>Vous avez un café sans caféine ?</summary>
@@ -594,6 +733,10 @@
       <details class="faq-item reveal">
         <summary>Le chat du café, il mord ?</summary>
         <p>Seulement si vous commandez du 100% chocolat sans lui en proposer une goutte. Sinon, il est parfaitement pacifique.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Qui est Théo Lapierre ?</summary>
+        <p>Le créateur de Chocafé, de sa recette Signature et du jeu de la Fusion. Vous le reconnaîtrez facilement : c'est celui qui commande toujours exactement 50/50 et qui vérifie à la balance.</p>
       </details>
       <details class="faq-item reveal">
         <summary>Peut-on venir juste pour poser le curseur sur 50/50 et repartir ?</summary>
@@ -627,7 +770,7 @@
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 Chocafé — Paris</span>
+      <span>© 2026 Chocafé — Paris · Une création de Théo Lapierre</span>
       <span>Aucun grain n'a été maltraité pendant la fabrication de ce site. Le développeur, en revanche...</span>
     </div>
   </div>
@@ -717,6 +860,8 @@
     "Notre torréfacteur a un jour confondu un sac de fèves de cacao avec un sac de café. Le mélange obtenu par erreur est... notre boisson la plus vendue.",
     "En moyenne, un client met 4 minutes et 32 secondes à choisir sa position sur le curseur. On a chronométré. On ne sait pas pourquoi.",
     "Nino le chat a goûté du café une fois en 2023. Il ne nous a jamais pardonnés.",
+    "Théo Lapierre, le créateur de Chocafé, a testé 214 ratios avant de valider le 50/50. Le 213e était 49/51. Il en fait encore des cauchemars.",
+    "Le premier Chocafé a été servi à Troyes, dans la cuisine de Théo Lapierre, dans un bol de petit-déjeuner. Le bol est aujourd'hui exposé derrière le comptoir.",
     "'Mocha' vient du port yéménite de Moka. Personne ne s'attendait à un cours de géographie ici, nous non plus."
   ];
   let lastFact = -1;
@@ -736,6 +881,360 @@
   // --- console easter egg for curious developers ---
   console.log('%c☕ + 🍫 = ❤️', 'font-size:20px;');
   console.log('Psst. Le vrai ratio secret est dans la variable CSS --mix. On ne vous a rien dit.');
+  console.log('%cChocafé — une création de Théo Lapierre', 'font-weight:bold; color:#8B5A2B;');
+
+
+  // --- La Fusion : the house game invented by Théo Lapierre ---
+  (function(){
+    const canvas = document.getElementById('gameCanvas');
+    const frame = document.getElementById('gameFrame');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('gameOverlay');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayText = document.getElementById('overlayText');
+    const overlayRank = document.getElementById('overlayRank');
+    const startBtn = document.getElementById('gameStart');
+    const toast = document.getElementById('gameToast');
+    const hud = {
+      score: document.getElementById('hudScore'), cups: document.getElementById('hudCups'),
+      combo: document.getElementById('hudCombo'), lives: document.getElementById('hudLives'),
+      best: document.getElementById('hudBest'), cafe: document.getElementById('hudCafe'),
+      choco: document.getElementById('hudChoco'), fill: document.getElementById('hudFill'),
+      marker: document.getElementById('hudMarker')
+    };
+
+    const W = 400, H = 500, CAPACITY = 12;
+    const COLORS = { cafe:'#9A6634', choco:'#5E3A36', gold:'#C89B5C', foam:'#FAF4E8', ice:'#BFE3F2' };
+    const BEST_KEY = 'chocafe-fusion-best';
+
+    let best = 0;
+    try { best = Number(localStorage.getItem(BEST_KEY)) || 0; } catch(e) {}
+    hud.best.textContent = best;
+
+    let state, running = false, lastTime = 0, keys = {}, pointerX = null, toastTimer;
+
+    function resize(){
+      const dpr = window.devicePixelRatio || 1;
+      const rect = frame.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);
+      if(!running) draw();
+    }
+
+    function newState(){
+      return {
+        cupX: W/2, cupW: 84, items: [], spawnTimer: 0,
+        layers: [], score: 0, cups: 0, combo: 1, lives: 3,
+        speed: 120, spawnEvery: 0.85, particles: []
+      };
+    }
+
+    function counts(){
+      let cafe = 0, choco = 0;
+      state.layers.forEach(l => l === 'cafe' ? cafe++ : choco++);
+      return { cafe, choco };
+    }
+
+    function updateHud(){
+      const { cafe, choco } = counts();
+      hud.score.textContent = state.score;
+      hud.cups.textContent = state.cups;
+      hud.combo.textContent = '×' + state.combo;
+      hud.lives.textContent = '☕'.repeat(state.lives) + '·'.repeat(3 - state.lives);
+      hud.cafe.textContent = cafe;
+      hud.choco.textContent = choco;
+      hud.fill.textContent = state.layers.length;
+      const total = cafe + choco;
+      hud.marker.style.left = (total ? (choco / total) * 100 : 50) + '%';
+    }
+
+    function showToast(text){
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1100);
+    }
+
+    function spawn(){
+      const r = Math.random();
+      let type = r < 0.44 ? 'cafe' : r < 0.88 ? 'choco' : r < 0.94 ? 'theo' : 'ice';
+      // ice cubes only show up once the player has warmed up
+      if(type === 'ice' && state.cups < 1) type = 'cafe';
+      state.items.push({
+        type, x: 24 + Math.random() * (W - 48), y: -20,
+        vy: state.speed * (0.85 + Math.random() * 0.35),
+        rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 3
+      });
+    }
+
+    function burst(x, y, color, n){
+      for(let i = 0; i < n; i++){
+        state.particles.push({ x, y, vx:(Math.random()-0.5)*160, vy:-Math.random()*160-40, life:0.6, color });
+      }
+    }
+
+    function catchItem(item){
+      const cupTop = H - 70;
+      if(item.type === 'ice'){
+        state.lives--;
+        state.combo = 1;
+        burst(item.x, cupTop, COLORS.ice, 14);
+        showToast('🧊 Chocafé froid ! −1 vie');
+        if(state.lives <= 0) return gameOver();
+      } else if(item.type === 'theo'){
+        // golden bean: rebalance the cup to a perfect split
+        const n = state.layers.length;
+        state.layers = [];
+        for(let i = 0; i < n; i++) state.layers.push(i % 2 ? 'choco' : 'cafe');
+        state.score += 50;
+        burst(item.x, cupTop, COLORS.gold, 22);
+        showToast('✨ Grain doré de Théo ! +50');
+      } else {
+        state.layers.push(item.type);
+        burst(item.x, cupTop, COLORS[item.type], 6);
+        if(state.layers.length >= CAPACITY) serveCup();
+      }
+      updateHud();
+    }
+
+    function serveCup(){
+      const { cafe, choco } = counts();
+      const gap = Math.abs(cafe - choco);
+      state.layers = [];
+      state.cups++;
+      if(gap === 0){
+        state.score += 100 * state.combo;
+        showToast(state.combo > 1 ? `Fusion parfaite ! ×${state.combo}` : 'Fusion parfaite !');
+        state.combo = Math.min(state.combo + 1, 5);
+        burstConfetti(frame);
+      } else if(gap === 2){
+        state.score += 50;
+        state.combo = 1;
+        showToast('Presque 50/50. +50');
+      } else if(gap === 4){
+        state.score += 20;
+        state.combo = 1;
+        showToast(cafe > choco ? 'Buvable, mais très café. +20' : 'Buvable, mais très chocolat. +20');
+      } else {
+        state.lives--;
+        state.combo = 1;
+        showToast(cafe > choco ? 'Imbuvable : trop de café ! −1 vie' : 'Imbuvable : trop de chocolat ! −1 vie');
+        if(state.lives <= 0) return gameOver();
+      }
+      state.speed = Math.min(120 + state.cups * 14, 360);
+      state.spawnEvery = Math.max(0.85 - state.cups * 0.04, 0.38);
+    }
+
+    function rankFor(score){
+      if(score >= 1500) return 'Digne de Théo Lapierre lui-même';
+      if(score >= 800) return 'Maître torréfacteur-chocolatier';
+      if(score >= 300) return 'Doseur confirmé';
+      return 'Apprenti barista';
+    }
+
+    function gameOver(){
+      running = false;
+      const isBest = state.score > best;
+      if(isBest){
+        best = state.score;
+        try { localStorage.setItem(BEST_KEY, String(best)); } catch(e) {}
+      }
+      hud.best.textContent = best;
+      updateHud();
+      draw();
+      overlayTitle.textContent = isBest ? `Nouveau record : ${state.score} !` : `Service terminé : ${state.score} pts`;
+      overlayText.textContent = `${state.cups} tasse${state.cups > 1 ? 's' : ''} servie${state.cups > 1 ? 's' : ''}. Théo Lapierre vous décerne le titre de :`;
+      overlayRank.textContent = rankFor(state.score);
+      startBtn.textContent = 'Rejouer';
+      overlay.hidden = false;
+    }
+
+    function start(){
+      state = newState();
+      overlay.hidden = true;
+      running = true;
+      lastTime = performance.now();
+      updateHud();
+      requestAnimationFrame(loop);
+    }
+
+    function update(dt){
+      const speed = 340;
+      if(keys.left) state.cupX -= speed * dt;
+      if(keys.right) state.cupX += speed * dt;
+      if(pointerX !== null) state.cupX += (pointerX - state.cupX) * Math.min(1, dt * 14);
+      state.cupX = Math.max(state.cupW/2, Math.min(W - state.cupW/2, state.cupX));
+
+      state.spawnTimer -= dt;
+      if(state.spawnTimer <= 0){
+        spawn();
+        state.spawnTimer = state.spawnEvery * (0.7 + Math.random() * 0.6);
+      }
+
+      const cupTop = H - 70;
+      for(let i = state.items.length - 1; i >= 0; i--){
+        const it = state.items[i];
+        it.y += it.vy * dt;
+        it.rot += it.vr * dt;
+        if(it.y >= cupTop - 8 && it.y <= cupTop + 14 && Math.abs(it.x - state.cupX) < state.cupW/2 + 6){
+          state.items.splice(i, 1);
+          catchItem(it);
+          if(!running) return;
+        } else if(it.y > H + 30){
+          state.items.splice(i, 1);
+        }
+      }
+
+      for(let i = state.particles.length - 1; i >= 0; i--){
+        const p = state.particles[i];
+        p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 420 * dt; p.life -= dt;
+        if(p.life <= 0) state.particles.splice(i, 1);
+      }
+    }
+
+    function drawItem(it){
+      ctx.save();
+      ctx.translate(it.x, it.y);
+      ctx.rotate(it.rot);
+      if(it.type === 'cafe'){
+        ctx.fillStyle = COLORS.cafe;
+        ctx.beginPath(); ctx.ellipse(0, 0, 11, 15, 0, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#3E2317'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, -12); ctx.quadraticCurveTo(4, 0, 0, 12); ctx.stroke();
+      } else if(it.type === 'choco'){
+        ctx.fillStyle = COLORS.choco;
+        ctx.fillRect(-13, -13, 26, 26);
+        ctx.strokeStyle = '#A0716A'; ctx.lineWidth = 1.5;
+        ctx.strokeRect(-13, -13, 26, 26);
+        ctx.beginPath(); ctx.moveTo(0, -13); ctx.lineTo(0, 13); ctx.moveTo(-13, 0); ctx.lineTo(13, 0); ctx.stroke();
+      } else if(it.type === 'theo'){
+        ctx.shadowColor = COLORS.gold; ctx.shadowBlur = 18;
+        ctx.fillStyle = COLORS.gold;
+        ctx.beginPath(); ctx.ellipse(0, 0, 12, 16, 0, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#241313';
+        ctx.font = 'bold 10px Fraunces, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('TL', 0, 1);
+      } else {
+        ctx.fillStyle = COLORS.ice;
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-12, -12, 24, 24, 5) : ctx.rect(-12, -12, 24, 24); ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(-6, -6); ctx.lineTo(2, -6); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawCup(){
+      const x = state ? state.cupX : W/2, w = state ? state.cupW : 84;
+      const top = H - 70, h = 54, bottom = top + h;
+      const left = x - w/2, right = x + w/2;
+      const inset = 10;
+      // contents, stacked as caught
+      const layers = state ? state.layers : [];
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(left, top); ctx.lineTo(right, top); ctx.lineTo(right - inset, bottom); ctx.lineTo(left + inset, bottom); ctx.closePath();
+      ctx.clip();
+      const band = h / CAPACITY;
+      layers.forEach((l, i) => {
+        ctx.fillStyle = COLORS[l];
+        ctx.fillRect(left, bottom - (i + 1) * band - 0.5, w, band + 1);
+      });
+      ctx.restore();
+      // cup outline + handle
+      ctx.strokeStyle = COLORS.foam; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(left, top); ctx.lineTo(left + inset, bottom); ctx.lineTo(right - inset, bottom); ctx.lineTo(right, top);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(right - 2, top + h/2 - 4, 12, -Math.PI/2.4, Math.PI/2.4);
+      ctx.stroke();
+      // saucer
+      ctx.beginPath(); ctx.ellipse(x, bottom + 6, w/2 + 12, 5, 0, 0, Math.PI*2); ctx.stroke();
+    }
+
+    function draw(){
+      const g = ctx.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, '#5A3A22'); g.addColorStop(0.5, '#3E2317'); g.addColorStop(0.5, '#3A2222'); g.addColorStop(1, '#241313');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(250,244,232,0.08)';
+      ctx.font = 'italic 600 46px Fraunces, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Chocafé', W/2, H/2 - 40);
+      ctx.font = '500 12px "JetBrains Mono", monospace';
+      ctx.fillText('UN JEU DE THÉO LAPIERRE', W/2, H/2);
+      if(state){
+        state.items.forEach(drawItem);
+        state.particles.forEach(p => {
+          ctx.globalAlpha = Math.max(0, p.life / 0.6);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+        });
+        ctx.globalAlpha = 1;
+      }
+      drawCup();
+    }
+
+    function loop(now){
+      if(!running) return;
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+      update(dt);
+      if(running){
+        draw();
+        requestAnimationFrame(loop);
+      }
+    }
+
+    function setKey(e, down){
+      const k = e.key;
+      if(k === 'ArrowLeft' || k === 'a' || k === 'q') keys.left = down;
+      else if(k === 'ArrowRight' || k === 'd') keys.right = down;
+      else return;
+      if(running){ e.preventDefault(); pointerX = null; }
+    }
+    window.addEventListener('keydown', e => setKey(e, true));
+    window.addEventListener('keyup', e => setKey(e, false));
+
+    function toLocalX(clientX){
+      const rect = canvas.getBoundingClientRect();
+      return (clientX - rect.left) / rect.width * W;
+    }
+    frame.addEventListener('pointermove', e => { if(running) pointerX = toLocalX(e.clientX); });
+    frame.addEventListener('pointerdown', e => { if(running) pointerX = toLocalX(e.clientX); });
+    frame.addEventListener('pointerleave', e => { if(e.pointerType === 'mouse') pointerX = null; });
+
+    document.addEventListener('visibilitychange', () => {
+      if(document.hidden && running){
+        running = false;
+        overlayTitle.textContent = 'Pause café';
+        overlayText.textContent = 'La tasse vous attend, elle ne refroidira pas.';
+        overlayRank.textContent = '';
+        startBtn.textContent = 'Reprendre';
+        startBtn.dataset.resume = '1';
+        overlay.hidden = false;
+      }
+    });
+
+    startBtn.addEventListener('click', () => {
+      if(startBtn.dataset.resume && state && state.lives > 0){
+        delete startBtn.dataset.resume;
+        overlay.hidden = true;
+        running = true;
+        lastTime = performance.now();
+        requestAnimationFrame(loop);
+        return;
+      }
+      delete startBtn.dataset.resume;
+      start();
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+  })();
 
   // --- scroll reveal ---
   const revealEls = document.querySelectorAll('.reveal');
