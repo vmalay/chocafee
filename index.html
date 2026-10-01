@@ -474,7 +474,6 @@
     .scroll-cue{display:none;}
 
     .concept-text p{margin-bottom:14px; line-height:1.6;}
-    .concept-text p:nth-child(3){display:none;}
     .origin-cards{flex-direction:row; gap:10px;}
     .origin-card{padding:18px 16px; border-radius:14px; flex:1;}
     .origin-card h3{font-size:1.02rem;}
@@ -531,6 +530,61 @@
     footer{padding:52px 0 80px;}
     .footer-grid{gap:26px; margin-bottom:36px;}
   }
+
+  .more-btn{display:none;}
+  @media (max-width:640px){
+    /* "Lire la suite": only the first paragraph, clamped, until opened */
+    [data-more]:not(.is-open) > p ~ p,
+    [data-more]:not(.is-open) > p ~ blockquote{display:none;}
+    [data-more]:not(.is-open) > p:first-of-type{
+      display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:6px;
+    }
+    .more-btn{
+      display:inline-block; background:none; border:none; padding:4px 0; cursor:pointer;
+      font-family:'JetBrains Mono', monospace; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;
+      color:var(--coffee);
+    }
+    .createur-card .more-btn{color:var(--gold);}
+    [data-more].is-open .more-btn{margin-top:4px;}
+
+    section{padding:44px 0;}
+    .section-head{margin-bottom:20px;}
+    .section-head h2{font-size:1.4rem;}
+
+    .concept-grid{gap:14px;}
+    .origin-card p{display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+
+    .createur-card h2{font-size:1.25rem; margin-bottom:10px;}
+
+    /* menu: two-line descriptions, tap to expand */
+    .menu-item{cursor:pointer; padding:12px 0;}
+    .menu-item .dose-caption{display:none;}
+    .menu-item .desc{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:0.84rem; line-height:1.45;}
+    .menu-item.is-open .desc{display:block;}
+    .menu-hint{display:block;}
+
+    .jeu .section-head p{display:none;}
+    .jeu-grid{gap:14px;}
+    .game-frame{max-height:58vh;}
+    .rules-note{margin-top:14px;}
+
+    .espace-title{font-size:1.4rem !important; margin-bottom:12px !important;}
+    .espace-visual{display:none;}
+
+    .faq-item{padding:12px 0;}
+
+    footer{padding:40px 0 76px;}
+    footer h3{font-size:1.3rem; margin-bottom:10px;}
+    footer .lead-foot{display:none;}
+    .team-card p{display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
+    .team-card .who{margin-bottom:6px;}
+    .footer-grid{grid-template-columns:1fr 1fr; gap:22px 16px; margin-bottom:24px;}
+    .footer-grid .foot-col:first-child{grid-column:1 / -1;}
+    .foot-col p, .foot-col a{font-size:0.86rem; margin-bottom:6px;}
+    .foot-col .mono{margin-bottom:8px;}
+    .foot-bottom{padding-top:18px;}
+  }
+  .menu-hint{display:none; font-family:'JetBrains Mono', monospace; font-size:0.64rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.5; margin:-10px 0 8px;}
 </style>
 </head>
 <body>
@@ -617,7 +671,7 @@
       <h2>Pourquoi on a coupé la carte en deux</h2>
     </div>
     <div class="concept-grid">
-      <div class="concept-text reveal">
+      <div class="concept-text reveal" data-more>
         <p>Chocafé est né dans la tête de <strong>Théo Lapierre</strong>, son créateur, d'un constat simple formulé un mardi soir à 23h autour d'une tablette entamée : le café et le cacao sont juste bons, tous les deux, et il n'y avait aucune raison sérieuse de choisir. Deux plaisirs, pourquoi s'en priver d'un ?</p>
         <p>Ici, un seul comptoir accueille le torréfacteur et la chocolaterie, contraints à la cohabitation. Les grains sont choisis en binôme, cru par cru, pour que chaque boisson puisse pencher côté café, côté chocolat, ou refuser catégoriquement de choisir.</p>
         <p>Pas de compromis bâclé : deux métiers, pratiqués avec la même exigence maniaque, sous le même toit, souvent dans la même phrase.</p>
@@ -642,7 +696,7 @@
   <div class="wrap">
     <div class="createur-card reveal">
       <div class="createur-monogram" aria-hidden="true">TL</div>
-      <div>
+      <div data-more>
         <span class="mono">Le créateur</span>
         <h2>Théo Lapierre, l'homme qui a refusé de choisir</h2>
         <p>Un matin à Troyes, Théo Lapierre s'est retrouvé devant deux tasses : un espresso et un chocolat chaud. Plutôt que de trancher, il a versé l'un dans l'autre. Le résultat était imbuvable, mais l'idée, elle, était parfaite. Quelques centaines de tests plus tard, Chocafé était né.</p>
@@ -701,6 +755,7 @@
       <span class="mono">La carte</span>
       <h2>Chaque boisson a son propre dosage</h2>
     </div>
+    <div class="menu-hint">Touchez une boisson pour le détail</div>
     <div class="menu-list">
 
       <div class="menu-item reveal">
@@ -840,8 +895,8 @@
           <li><span class="ico">🧊</span><span><strong>Glaçon</strong> : un Chocafé froid ? Jamais. Vous perdez une vie si vous l'attrapez.</span></li>
           <li><span class="ico">⚖️</span><span><strong>Service</strong> : à 12 ingrédients, la tasse part. 6/6 = Fusion parfaite (100 pts, combo +1). 5/7 = 50 pts. 4/8 = 20 pts. Au-delà : imbuvable, une vie en moins.</span></li>
         </ul>
-        </details>
         <p class="rules-note">Ça accélère à chaque tasse servie. Battez le record de Théo et montrez votre score au comptoir : « Le Lapierre » vous est offert. (Il dit avoir fait 4 200. On n'a jamais vu la capture.)</p>
+        </details>
       </div>
     </div>
   </div>
@@ -850,9 +905,9 @@
 <section class="espace" id="espace">
   <div class="wrap">
     <div class="espace-grid">
-      <div class="espace-text reveal">
+      <div class="espace-text reveal" data-more>
         <span class="mono" style="color:var(--coffee); display:block; margin-bottom:14px;">L'espace</span>
-        <h2 style="margin-bottom:22px; font-size:clamp(1.8rem,3vw,2.4rem);">Un comptoir, deux ateliers visibles, une seule machine à café qui fait grève une fois par mois</h2>
+        <h2 class="espace-title" style="margin-bottom:22px; font-size:clamp(1.8rem,3vw,2.4rem);">Un comptoir, deux ateliers visibles, une seule machine à café qui fait grève une fois par mois</h2>
         <p>D'un côté, le torréfacteur tourne chaque matin dès 7h, sourd à toute conversation avant son propre café. De l'autre, la plonge à chocolat conche et tempère à vue, sans jamais lever les yeux. Entre les deux, le bar où les deux mondes finissent toujours par se mélanger, tasse après tasse.</p>
         <p>28 places assises, une grande table d'hôte en chêne brûlé qui a connu plus de premiers rendez-vous que nous n'osons l'admettre, et une vitrine commune pour les grains de café et les fèves de cacao du moment.</p>
       </div>
@@ -1420,6 +1475,23 @@
 
   // --- game rules folded on small screens ---
   if(window.matchMedia('(max-width:640px)').matches) document.getElementById('rulesBox').open = false;
+
+
+  // --- "Lire la suite" and menu details on small screens ---
+  document.querySelectorAll('[data-more]').forEach(box => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'more-btn';
+    btn.textContent = 'Lire la suite +';
+    btn.addEventListener('click', () => {
+      const open = box.classList.toggle('is-open');
+      btn.textContent = open ? 'Réduire −' : 'Lire la suite +';
+    });
+    box.appendChild(btn);
+  });
+  document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', () => item.classList.toggle('is-open'));
+  });
 
   // --- scroll reveal ---
   const revealEls = document.querySelectorAll('.reveal');
