@@ -585,6 +585,23 @@
     .foot-bottom{padding-top:18px;}
   }
   .menu-hint{display:none; font-family:'JetBrains Mono', monospace; font-size:0.64rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.5; margin:-10px 0 8px;}
+
+  .game-controls{position:absolute; top:10px; right:10px; display:flex; gap:8px; z-index:3;}
+  .game-icon{
+    width:36px; height:36px; border-radius:50%; border:1px solid rgba(250,244,232,0.3);
+    background:rgba(36,19,19,0.55); color:var(--foam); cursor:pointer; font-size:0.85rem;
+    display:grid; place-items:center; backdrop-filter:blur(4px);
+  }
+  .game-icon[hidden]{display:none;}
+  .game-overlay{z-index:4;}
+  .game-btn-ghost{background:none; border:1px solid rgba(250,244,232,0.4); color:var(--foam);}
+  .game-btn[hidden]{display:none;}
+  .game-ratio .dose-track .target{
+    position:absolute; top:50%; height:16px; width:16.6%; transform:translate(-50%,-50%);
+    border:1.5px dashed var(--gold); border-radius:6px; transition:left .4s ease;
+  }
+  .game-ratio .caption .order{color:var(--gold); opacity:1; text-align:center;}
+  .game-ratio .caption i{font-style:normal; opacity:0.6;}
 </style>
 </head>
 <body>
@@ -866,11 +883,16 @@
         <div class="game-frame" id="gameFrame">
           <canvas id="gameCanvas" aria-label="Jeu La Fusion : déplacez la tasse pour attraper café et chocolat"></canvas>
           <div class="game-toast" id="gameToast"></div>
+          <div class="game-controls">
+            <button class="game-icon" id="gameMute" type="button" aria-label="Couper le son">🔊</button>
+            <button class="game-icon" id="gamePause" type="button" aria-label="Pause" hidden>❚❚</button>
+          </div>
           <div class="game-overlay" id="gameOverlay">
             <h3 id="overlayTitle">Prêt à doser ?</h3>
-            <p id="overlayText">Flèches ← → ou souris / doigt pour bouger la tasse. 12 ingrédients par tasse, le 6/6 est la perfection.</p>
+            <p id="overlayText">Un ticket affiche la commande : chaque boisson de la carte a son dosage. Attrapez exactement le bon nombre de grains et de carrés. Flèches, souris ou doigt pour bouger, P pour la pause.</p>
             <div class="rank" id="overlayRank"></div>
             <button class="game-btn" id="gameStart" type="button">Lancer la Fusion</button>
+            <button class="game-btn game-btn-ghost" id="gameShare" type="button" hidden>Partager mon score</button>
           </div>
         </div>
         <div class="game-hud">
@@ -881,21 +903,22 @@
           <div>Record<strong id="hudBest">0</strong></div>
         </div>
         <div class="game-ratio">
-          <div class="caption"><span>Café <b id="hudCafe">0</b></span><span>Tasse <b id="hudFill">0</b>/12</span><span><b id="hudChoco">0</b> Chocolat</span></div>
-          <div class="dose-track"><div class="marker" id="hudMarker" style="left:50%"></div></div>
+          <div class="caption"><span>Café <b id="hudCafe">0</b>/<i id="hudCafeGoal">6</i></span><span class="order" id="hudOrder">Chocafé Signature</span><span><b id="hudChoco">0</b>/<i id="hudChocoGoal">6</i> Chocolat</span></div>
+          <div class="dose-track"><div class="target" id="hudTarget" style="left:50%"></div><div class="marker" id="hudMarker" style="left:50%"></div></div>
         </div>
       </div>
       <div class="reveal">
         <details class="rules-box" id="rulesBox" open>
         <summary>Règles du jeu</summary>
         <ul class="rules">
-          <li><span class="ico">☕</span><span><strong>Grain de café</strong> : ajoute une dose de café dans la tasse.</span></li>
-          <li><span class="ico">🍫</span><span><strong>Carré de chocolat</strong> : ajoute une dose de chocolat. Esquivez ce dont vous n'avez pas besoin.</span></li>
-          <li><span class="ico">✨</span><span><strong>Grain doré de Théo</strong> : rare. Rééquilibre instantanément la tasse et rapporte 50 points. Théo Lapierre l'a ajouté « pour les jours sans ».</span></li>
-          <li><span class="ico">🧊</span><span><strong>Glaçon</strong> : un Chocafé froid ? Jamais. Vous perdez une vie si vous l'attrapez.</span></li>
-          <li><span class="ico">⚖️</span><span><strong>Service</strong> : à 12 ingrédients, la tasse part. 6/6 = Fusion parfaite (100 pts, combo +1). 5/7 = 50 pts. 4/8 = 20 pts. Au-delà : imbuvable, une vie en moins.</span></li>
+          <li><span class="ico">🧾</span><span><strong>La commande</strong> : le ticket en haut indique la boisson à préparer, tirée de la carte (Signature 6/6, Cortado 9/3, Mocha 5/7…). La jauge sous le jeu montre la cible.</span></li>
+          <li><span class="ico">⚖️</span><span><strong>Service</strong> : à 12 ingrédients, la tasse part. Dosage exact = Fusion parfaite (100 pts × combo). Un ingrédient d'écart = 50 pts, deux = 20 pts. Au-delà : imbuvable, une vie en moins.</span></li>
+          <li><span class="ico">🔥</span><span><strong>Mode Fusion</strong> : trois tasses parfaites d'affilée et les points doublent. Toutes les 5 tasses parfaites, une vie revient.</span></li>
+          <li><span class="ico">✨</span><span><strong>Grain doré de Théo</strong> : rééquilibre la tasse selon la commande, +50 pts. Théo Lapierre l'a ajouté « pour les jours sans ».</span></li>
+          <li><span class="ico">🍦</span><span><strong>Chantilly</strong> : tasse XXL pendant 8 s. <strong>⏳ Sablier</strong> : tout ralentit pendant 6 s.</span></li>
+          <li><span class="ico">🧊</span><span><strong>Glaçon</strong> : un Chocafé froid ? Jamais. −1 vie. <strong>🌶️ Piment</strong> : commandes inversées pendant 5 s.</span></li>
         </ul>
-        <p class="rules-note">Ça accélère à chaque tasse servie. Battez le record de Théo et montrez votre score au comptoir : « Le Lapierre » vous est offert. (Il dit avoir fait 4 200. On n'a jamais vu la capture.)</p>
+        <p class="rules-note">Un nouveau niveau toutes les 3 tasses : ça accélère, puis les ingrédients se mettent à danser. Battez le record de Théo et montrez votre score au comptoir : « Le Lapierre » vous est offert. (Il dit avoir fait 4 200. On n'a jamais vu la capture.)</p>
         </details>
       </div>
     </div>
@@ -1105,25 +1128,107 @@
     const overlayText = document.getElementById('overlayText');
     const overlayRank = document.getElementById('overlayRank');
     const startBtn = document.getElementById('gameStart');
+    const shareBtn = document.getElementById('gameShare');
+    const pauseBtn = document.getElementById('gamePause');
+    const muteBtn = document.getElementById('gameMute');
     const toast = document.getElementById('gameToast');
     const hud = {
       score: document.getElementById('hudScore'), cups: document.getElementById('hudCups'),
       combo: document.getElementById('hudCombo'), lives: document.getElementById('hudLives'),
       best: document.getElementById('hudBest'), cafe: document.getElementById('hudCafe'),
-      choco: document.getElementById('hudChoco'), fill: document.getElementById('hudFill'),
-      marker: document.getElementById('hudMarker')
+      choco: document.getElementById('hudChoco'), cafeGoal: document.getElementById('hudCafeGoal'),
+      chocoGoal: document.getElementById('hudChocoGoal'), order: document.getElementById('hudOrder'),
+      marker: document.getElementById('hudMarker'), target: document.getElementById('hudTarget')
     };
 
-    const W = 400, H = 500, CAPACITY = 12;
-    const COLORS = { cafe:'#9A6634', choco:'#5E3A36', gold:'#C89B5C', foam:'#FAF4E8', ice:'#BFE3F2' };
-    const BEST_KEY = 'chocafe-fusion-best';
+    const W = 400, H = 500, CAPACITY = 12, CUP_Y = H - 70, CUP_W = 84, CUP_W_WIDE = 132;
+    const COLORS = {
+      cafe:'#9A6634', choco:'#5E3A36', gold:'#C89B5C', goldLight:'#F1D29A', foam:'#FAF4E8',
+      ice:'#BFE3F2', red:'#E0533D', cream:'#FFF8EC'
+    };
+    // every order is a drink from the menu: number of coffee doses out of 12
+    const ORDERS = [
+      { name:'Chocafé Signature', cafe:6 },
+      { name:"Cortado d'Éthiopie", cafe:9 },
+      { name:'Mocha marbré', cafe:5 },
+      { name:'Chocolat de São Tomé', cafe:2 },
+      { name:'Le Lapierre', cafe:6 },
+      { name:'Mendiant du torréfacteur', cafe:4 }
+    ];
+    const THEO_RECORD = 4200;
+    const BEST_KEY = 'chocafe-fusion-best', MUTE_KEY = 'chocafe-fusion-muted';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    let best = 0;
-    try { best = Number(localStorage.getItem(BEST_KEY)) || 0; } catch(e) {}
+    function readStore(key){ try { return localStorage.getItem(key); } catch(e) { return null; } }
+    function writeStore(key, value){ try { localStorage.setItem(key, value); } catch(e) {} }
+    function vibrate(pattern){ if(navigator.vibrate) navigator.vibrate(pattern); }
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    let best = Number(readStore(BEST_KEY)) || 0;
     hud.best.textContent = best;
 
-    let state, running = false, lastTime = 0, keys = {}, pointerX = null, toastTimer;
+    let state = null, running = false, paused = false, lastTime = 0, keys = {}, pointerX = null, toastTimer;
 
+    // decorative beans drifting in the background, alive even between games
+    const ambient = Array.from({ length: 14 }, () => ({
+      x: rand(0, W), y: rand(0, H), vy: rand(6, 16), rot: rand(0, 6), vr: rand(-0.4, 0.4),
+      type: Math.random() < 0.5 ? 'cafe' : 'choco', size: rand(0.5, 0.9)
+    }));
+
+    // ---------- sound: synthesized, no files ----------
+    let actx = null, muted = readStore(MUTE_KEY) === '1';
+    function ensureAudio(){
+      if(!actx){
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if(AC) actx = new AC();
+      }
+      if(actx && actx.state === 'suspended') actx.resume();
+    }
+    function tone(freq, dur, { type = 'sine', vol = 0.12, delay = 0, to = null } = {}){
+      if(muted || !actx) return;
+      const t = actx.currentTime + delay;
+      const osc = actx.createOscillator(), gain = actx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      if(to) osc.frequency.exponentialRampToValueAtTime(to, t + dur);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(vol, t + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(gain).connect(actx.destination);
+      osc.start(t);
+      osc.stop(t + dur + 0.03);
+    }
+    const arpeggio = (notes, step, opts) => notes.forEach((f, i) => tone(f, opts.dur || 0.2, { ...opts, delay: i * step }));
+    const SOUNDS = {
+      cafe: () => tone(620, 0.09, { type:'triangle', to:900 }),
+      choco: () => tone(430, 0.1, { type:'triangle', to:610 }),
+      perfect: () => arpeggio([523, 659, 784, 1047], 0.07, { type:'triangle', vol:0.14, dur:0.24 }),
+      good: () => arpeggio([523, 659], 0.08, { type:'triangle', dur:0.16 }),
+      meh: () => tone(392, 0.2, { type:'triangle' }),
+      bad: () => tone(190, 0.38, { type:'sawtooth', to:70, vol:0.08 }),
+      power: () => tone(300, 0.35, { to:1300, vol:0.12 }),
+      chili: () => tone(900, 0.3, { type:'square', to:200, vol:0.05 }),
+      level: () => arpeggio([392, 523, 659, 784], 0.09, { type:'square', vol:0.05, dur:0.16 }),
+      fever: () => arpeggio([659, 784, 988, 1319, 1568], 0.06, { type:'square', vol:0.05, dur:0.2 }),
+      tick: () => tone(880, 0.09, { vol:0.1 }),
+      go: () => tone(1320, 0.3, { vol:0.12 }),
+      over: () => arpeggio([392, 330, 262, 196], 0.17, { type:'triangle', vol:0.12, dur:0.32 }),
+      record: () => arpeggio([523, 659, 784, 1047, 1319, 1568], 0.08, { type:'triangle', vol:0.13, dur:0.3 })
+    };
+    function sfx(name){ SOUNDS[name](); }
+    function renderMute(){
+      muteBtn.textContent = muted ? '🔇' : '🔊';
+      muteBtn.setAttribute('aria-label', muted ? 'Activer le son' : 'Couper le son');
+    }
+    renderMute();
+    muteBtn.addEventListener('click', () => {
+      muted = !muted;
+      writeStore(MUTE_KEY, muted ? '1' : '0');
+      renderMute();
+      if(!muted){ ensureAudio(); sfx('tick'); }
+    });
+
+    // ---------- setup ----------
     function resize(){
       const dpr = window.devicePixelRatio || 1;
       const rect = frame.getBoundingClientRect();
@@ -1135,16 +1240,19 @@
 
     function newState(){
       return {
-        cupX: W/2, cupW: 84, items: [], spawnTimer: 0,
-        layers: [], score: 0, cups: 0, combo: 1, lives: 3,
-        speed: 120, spawnEvery: 0.85, particles: []
+        cupX: W/2, cupW: CUP_W, cupVX: 0, items: [], spawnTimer: 0.4,
+        layers: [], score: 0, cups: 0, perfects: 0, combo: 1, lives: 3, level: 1,
+        order: ORDERS[0], ticketT: 0, speed: 120, spawnEvery: 0.85,
+        effects: { wide: 0, slow: 0, reverse: 0 },
+        particles: [], floaters: [], rings: [], steam: [], ghosts: [],
+        shake: 0, flash: null, banner: null, countdown: 3, time: 0, fever: false
       };
     }
 
     function counts(){
-      let cafe = 0, choco = 0;
-      state.layers.forEach(l => l === 'cafe' ? cafe++ : choco++);
-      return { cafe, choco };
+      let cafe = 0;
+      state.layers.forEach(l => { if(l === 'cafe') cafe++; });
+      return { cafe, choco: state.layers.length - cafe };
     }
 
     function updateHud(){
@@ -1152,143 +1260,364 @@
       hud.score.textContent = state.score;
       hud.cups.textContent = state.cups;
       hud.combo.textContent = '×' + state.combo;
-      hud.lives.textContent = '☕'.repeat(state.lives) + '·'.repeat(3 - state.lives);
+      hud.lives.textContent = '☕'.repeat(state.lives) + '·'.repeat(Math.max(0, 3 - state.lives));
       hud.cafe.textContent = cafe;
       hud.choco.textContent = choco;
-      hud.fill.textContent = state.layers.length;
+      hud.cafeGoal.textContent = state.order.cafe;
+      hud.chocoGoal.textContent = CAPACITY - state.order.cafe;
+      hud.order.textContent = state.order.name;
       const total = cafe + choco;
       hud.marker.style.left = (total ? (choco / total) * 100 : 50) + '%';
+      hud.target.style.left = ((CAPACITY - state.order.cafe) / CAPACITY) * 100 + '%';
     }
 
     function showToast(text){
       toast.textContent = text;
       toast.classList.add('show');
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 1100);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1300);
+    }
+
+    // ---------- effects helpers ----------
+    function splash(x, y, color, n, power = 1){
+      for(let i = 0; i < n; i++){
+        state.particles.push({
+          x, y, vx: rand(-170, 170) * power, vy: rand(-260, -60) * power,
+          r: rand(1.5, 4), life: rand(0.5, 0.9), max: 0.9, color
+        });
+      }
+    }
+    function ring(x, y, color, size = 1){ state.rings.push({ x, y, r: 6, grow: 160 * size, life: 0.55, max: 0.55, color }); }
+    function floater(text, x, y, color, size = 22){ state.floaters.push({ text, x, y, life: 1.1, max: 1.1, color, size }); }
+    function flash(color, a){ state.flash = { color, a }; }
+    function shake(n){ if(!reduceMotion) state.shake = Math.max(state.shake, n); }
+
+    // ---------- gameplay ----------
+    function pickType(){
+      const lvl = state.level;
+      const lean = state.order.cafe / CAPACITY;
+      const table = [
+        ['cafe', 30 + 24 * lean],
+        ['choco', 30 + 24 * (1 - lean)],
+        ['theo', state.fever ? 7 : 3.5],
+        ['cream', lvl >= 2 ? 3 : 0],
+        ['slow', lvl >= 2 ? 3 : 0],
+        ['ice', lvl >= 2 ? 3 + lvl : 0],
+        ['chili', lvl >= 3 ? 2 + lvl / 2 : 0]
+      ];
+      let r = Math.random() * table.reduce((sum, [, w]) => sum + w, 0);
+      for(const [type, w] of table){ if((r -= w) < 0) return type; }
+      return 'cafe';
     }
 
     function spawn(){
-      const r = Math.random();
-      let type = r < 0.44 ? 'cafe' : r < 0.88 ? 'choco' : r < 0.94 ? 'theo' : 'ice';
-      // ice cubes only show up once the player has warmed up
-      if(type === 'ice' && state.cups < 1) type = 'cafe';
       state.items.push({
-        type, x: 24 + Math.random() * (W - 48), y: -20,
-        vy: state.speed * (0.85 + Math.random() * 0.35),
-        rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 3
+        type: pickType(), x: rand(26, W - 26), y: -24,
+        vy: state.speed * rand(0.85, 1.2), rot: rand(0, Math.PI), vr: rand(-1.5, 1.5),
+        phase: rand(0, 6), sway: state.level >= 4 ? rand(20, 50) : 0
       });
     }
 
-    function burst(x, y, color, n){
-      for(let i = 0; i < n; i++){
-        state.particles.push({ x, y, vx:(Math.random()-0.5)*160, vy:-Math.random()*160-40, life:0.6, color });
-      }
+    function nextOrder(){
+      if(state.cups < 2) return ORDERS[0];
+      let order;
+      do { order = ORDERS[Math.floor(Math.random() * ORDERS.length)]; } while(order === state.order && Math.random() < 0.7);
+      return order;
     }
 
-    function catchItem(item){
-      const cupTop = H - 70;
-      if(item.type === 'ice'){
-        state.lives--;
-        state.combo = 1;
-        burst(item.x, cupTop, COLORS.ice, 14);
-        showToast('🧊 Chocafé froid ! −1 vie');
-        if(state.lives <= 0) return gameOver();
-      } else if(item.type === 'theo'){
-        // golden bean: rebalance the cup to a perfect split
-        const n = state.layers.length;
-        state.layers = [];
-        for(let i = 0; i < n; i++) state.layers.push(i % 2 ? 'choco' : 'cafe');
-        state.score += 50;
-        burst(item.x, cupTop, COLORS.gold, 22);
-        showToast('✨ Grain doré de Théo ! +50');
-      } else {
-        state.layers.push(item.type);
-        burst(item.x, cupTop, COLORS[item.type], 6);
+    function loseLife(message){
+      state.lives--;
+      state.combo = 1;
+      state.fever = false;
+      shake(14);
+      flash(COLORS.red, 0.35);
+      vibrate([60, 40, 90]);
+      sfx('bad');
+      showToast(message + ' −1 vie');
+      if(state.lives <= 0) gameOver();
+    }
+
+    function catchItem(it){
+      const x = it.x, y = CUP_Y;
+      if(it.type === 'cafe' || it.type === 'choco'){
+        state.layers.push(it.type);
+        state.score += 5;
+        splash(x, y, COLORS[it.type], 9);
+        ring(x, y, COLORS[it.type], 0.6);
+        sfx(it.type);
         if(state.layers.length >= CAPACITY) serveCup();
+      } else if(it.type === 'theo'){
+        // golden bean: redistribute the cup so it matches the current order
+        const n = state.layers.length, goal = state.order.cafe / CAPACITY;
+        let cafe = 0;
+        state.layers = [];
+        for(let i = 0; i < n; i++){
+          const isCafe = Math.round((i + 1) * goal) > cafe;
+          if(isCafe) cafe++;
+          state.layers.push(isCafe ? 'cafe' : 'choco');
+        }
+        state.score += 50;
+        splash(x, y, COLORS.gold, 30, 1.3);
+        ring(x, y, COLORS.goldLight, 1.6);
+        floater('+50', x, y - 30, COLORS.goldLight);
+        flash(COLORS.gold, 0.25);
+        sfx('power');
+        showToast('✨ Grain doré de Théo : tasse rééquilibrée !');
+      } else if(it.type === 'cream'){
+        state.effects.wide = 8;
+        splash(x, y, COLORS.cream, 20);
+        ring(x, y, COLORS.cream, 1.2);
+        sfx('power');
+        showToast('🍦 Chantilly : tasse XXL pendant 8 s');
+      } else if(it.type === 'slow'){
+        state.effects.slow = 6;
+        ring(x, y, COLORS.goldLight, 2.4);
+        flash('#7FB7D6', 0.18);
+        sfx('power');
+        showToast('⏳ Sablier : tout ralentit pendant 6 s');
+      } else if(it.type === 'chili'){
+        state.effects.reverse = 5;
+        splash(x, y, COLORS.red, 18);
+        shake(8);
+        vibrate(80);
+        sfx('chili');
+        showToast('🌶️ Piment ! Commandes inversées 5 s');
+      } else if(it.type === 'ice'){
+        splash(x, y, COLORS.ice, 22, 1.2);
+        loseLife('🧊 Chocafé froid !');
       }
-      updateHud();
+      if(running) updateHud();
     }
 
     function serveCup(){
-      const { cafe, choco } = counts();
-      const gap = Math.abs(cafe - choco);
+      const { cafe } = counts();
+      const gap = Math.abs(cafe - state.order.cafe);
+      const x = state.cupX, y = CUP_Y - 40;
+      state.ghosts.push({ x, layers: state.layers.slice(), t: 0 });
       state.layers = [];
       state.cups++;
+
       if(gap === 0){
-        state.score += 100 * state.combo;
+        const pts = 100 * state.combo * (state.fever ? 2 : 1);
+        state.score += pts;
+        state.perfects++;
+        floater('+' + pts, x, y, COLORS.goldLight, 34);
         showToast(state.combo > 1 ? `Fusion parfaite ! ×${state.combo}` : 'Fusion parfaite !');
         state.combo = Math.min(state.combo + 1, 5);
+        flash(COLORS.goldLight, 0.45);
+        ring(x, CUP_Y, COLORS.goldLight, 1.4);
+        ring(x, CUP_Y, COLORS.gold, 2.4);
+        splash(x, CUP_Y - 20, COLORS.gold, 24, 1.4);
+        splash(x, CUP_Y - 20, COLORS.cafe, 12, 1.2);
+        splash(x, CUP_Y - 20, COLORS.choco, 12, 1.2);
+        shake(5);
+        vibrate(25);
         burstConfetti(frame);
-      } else if(gap === 2){
+        sfx('perfect');
+        if(state.perfects % 5 === 0 && state.lives < 3){
+          state.lives++;
+          floater('+1 vie ☕', x, y - 44, COLORS.foam, 20);
+        }
+        if(state.combo >= 3 && !state.fever){
+          state.fever = true;
+          setTimeout(() => { if(running) { showToast('🔥 MODE FUSION : points doublés !'); sfx('fever'); } }, 700);
+        }
+      } else if(gap === 1){
         state.score += 50;
         state.combo = 1;
-        showToast('Presque 50/50. +50');
-      } else if(gap === 4){
+        state.fever = false;
+        floater('+50', x, y, COLORS.foam, 26);
+        splash(x, CUP_Y - 20, COLORS.gold, 10);
+        showToast('Presque parfait. +50');
+        sfx('good');
+      } else if(gap === 2){
         state.score += 20;
         state.combo = 1;
-        showToast(cafe > choco ? 'Buvable, mais très café. +20' : 'Buvable, mais très chocolat. +20');
+        state.fever = false;
+        floater('+20', x, y, COLORS.foam, 22);
+        showToast('Buvable… de justesse. +20');
+        sfx('meh');
       } else {
-        state.lives--;
-        state.combo = 1;
-        showToast(cafe > choco ? 'Imbuvable : trop de café ! −1 vie' : 'Imbuvable : trop de chocolat ! −1 vie');
-        if(state.lives <= 0) return gameOver();
+        loseLife(cafe > state.order.cafe ? 'Imbuvable : trop de café !' : 'Imbuvable : trop de chocolat !');
+        if(!running) return;
       }
-      state.speed = Math.min(120 + state.cups * 14, 360);
-      state.spawnEvery = Math.max(0.85 - state.cups * 0.04, 0.38);
+
+      const level = 1 + Math.floor(state.cups / 3);
+      if(level > state.level){
+        state.level = level;
+        const news = { 2: 'Glaçons, chantilly et sabliers arrivent', 3: 'Attention au piment', 4: 'Les ingrédients dansent' };
+        state.banner = { title: `Niveau ${level}`, sub: news[level] || 'Ça accélère encore…', t: 0 };
+        setTimeout(() => { if(running) sfx('level'); }, 350);
+      }
+      state.speed = Math.min(120 + state.cups * 12, 380);
+      state.spawnEvery = Math.max(0.85 - state.cups * 0.035, 0.34);
+      state.order = nextOrder();
+      state.ticketT = 0;
     }
 
     function rankFor(score){
-      if(score >= 1500) return 'Digne de Théo Lapierre lui-même';
-      if(score >= 800) return 'Maître torréfacteur-chocolatier';
+      if(score > THEO_RECORD) return 'Plus fort que Théo Lapierre (il ne s\'en remettra pas)';
+      if(score >= 2000) return 'Digne de Théo Lapierre';
+      if(score >= 900) return 'Maître torréfacteur-chocolatier';
       if(score >= 300) return 'Doseur confirmé';
       return 'Apprenti barista';
     }
 
     function gameOver(){
       running = false;
+      paused = false;
       const isBest = state.score > best;
       if(isBest){
         best = state.score;
-        try { localStorage.setItem(BEST_KEY, String(best)); } catch(e) {}
+        writeStore(BEST_KEY, String(best));
       }
       hud.best.textContent = best;
       updateHud();
       draw();
-      overlayTitle.textContent = isBest ? `Nouveau record : ${state.score} !` : `Service terminé : ${state.score} pts`;
-      overlayText.textContent = `${state.cups} tasse${state.cups > 1 ? 's' : ''} servie${state.cups > 1 ? 's' : ''}. Théo Lapierre vous décerne le titre de :`;
+      sfx('over');
+      if(isBest && state.score > 0){
+        setTimeout(() => { sfx('record'); burstConfetti(frame); }, 700);
+        setTimeout(() => burstConfetti(frame), 1100);
+      }
+      overlayTitle.textContent = isBest && state.score > 0 ? `Nouveau record : ${state.score} !` : `Service terminé : ${state.score} pts`;
+      const plural = state.cups > 1 ? 's' : '';
+      overlayText.textContent = state.score > THEO_RECORD
+        ? `Vous avez battu Théo ! Montrez cet écran au comptoir : « Le Lapierre » est pour nous.`
+        : `${state.cups} tasse${plural} servie${plural}, ${state.perfects} parfaite${state.perfects > 1 ? 's' : ''}. Théo Lapierre vous décerne le titre de :`;
       overlayRank.textContent = rankFor(state.score);
       startBtn.textContent = 'Rejouer';
+      shareBtn.hidden = false;
+      shareBtn.textContent = 'Partager mon score';
+      pauseBtn.hidden = true;
       overlay.hidden = false;
     }
 
     function start(){
+      ensureAudio();
       state = newState();
       overlay.hidden = true;
+      shareBtn.hidden = true;
+      pauseBtn.hidden = false;
+      pauseBtn.textContent = '❚❚';
       running = true;
+      paused = false;
       lastTime = performance.now();
       updateHud();
+      sfx('tick');
       requestAnimationFrame(loop);
     }
 
-    function update(dt){
-      const speed = 340;
-      if(keys.left) state.cupX -= speed * dt;
-      if(keys.right) state.cupX += speed * dt;
-      if(pointerX !== null) state.cupX += (pointerX - state.cupX) * Math.min(1, dt * 14);
-      state.cupX = Math.max(state.cupW/2, Math.min(W - state.cupW/2, state.cupX));
+    function pause(){
+      if(!running) return;
+      running = false;
+      paused = true;
+      overlayTitle.textContent = 'Pause café';
+      overlayText.textContent = 'La tasse vous attend, elle ne refroidira pas.';
+      overlayRank.textContent = '';
+      startBtn.textContent = 'Reprendre';
+      shareBtn.hidden = true;
+      pauseBtn.textContent = '▶';
+      overlay.hidden = false;
+    }
 
-      state.spawnTimer -= dt;
-      if(state.spawnTimer <= 0){
-        spawn();
-        state.spawnTimer = state.spawnEvery * (0.7 + Math.random() * 0.6);
+    function resume(){
+      if(!paused) return;
+      ensureAudio();
+      paused = false;
+      overlay.hidden = true;
+      pauseBtn.textContent = '❚❚';
+      running = true;
+      keys = {};
+      lastTime = performance.now();
+      requestAnimationFrame(loop);
+    }
+
+    // ---------- update ----------
+    function updateFx(dt){
+      ambient.forEach(b => {
+        b.y += b.vy * dt * (state && state.fever ? 3 : 1);
+        b.rot += b.vr * dt;
+        if(b.y > H + 20){ b.y = -20; b.x = rand(0, W); }
+      });
+      if(!state) return;
+      for(let i = state.particles.length - 1; i >= 0; i--){
+        const p = state.particles[i];
+        p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 600 * dt; p.life -= dt;
+        if(p.life <= 0) state.particles.splice(i, 1);
+      }
+      for(let i = state.rings.length - 1; i >= 0; i--){
+        const r = state.rings[i];
+        r.r += r.grow * dt; r.life -= dt;
+        if(r.life <= 0) state.rings.splice(i, 1);
+      }
+      for(let i = state.floaters.length - 1; i >= 0; i--){
+        const f = state.floaters[i];
+        f.y -= 55 * dt; f.life -= dt;
+        if(f.life <= 0) state.floaters.splice(i, 1);
+      }
+      for(let i = state.steam.length - 1; i >= 0; i--){
+        const s = state.steam[i];
+        s.y -= 34 * dt; s.r += 9 * dt; s.x += Math.sin(state.time * 3 + s.phase) * 12 * dt; s.life -= dt;
+        if(s.life <= 0) state.steam.splice(i, 1);
+      }
+      for(let i = state.ghosts.length - 1; i >= 0; i--){
+        state.ghosts[i].t += dt;
+        if(state.ghosts[i].t > 0.8) state.ghosts.splice(i, 1);
+      }
+      state.shake *= Math.exp(-dt * 9);
+      if(state.flash){ state.flash.a -= dt * 1.6; if(state.flash.a <= 0) state.flash = null; }
+      if(state.banner){ state.banner.t += dt; if(state.banner.t > 2) state.banner = null; }
+      state.ticketT = Math.min(1, state.ticketT + dt * 3);
+      if(state.layers.length && Math.random() < dt * 7){
+        state.steam.push({ x: state.cupX + rand(-16, 16), y: CUP_Y - 4, r: rand(3, 6), life: 1.3, phase: rand(0, 6) });
+      }
+      if(state.fever && Math.random() < dt * 14){
+        state.particles.push({ x: rand(0, W), y: -5, vx: rand(-20, 20), vy: rand(40, 120), r: rand(1, 2.5), life: 1.6, max: 1.6, color: COLORS.goldLight });
+      }
+    }
+
+    function update(dt){
+      state.time += dt;
+      for(const k in state.effects) state.effects[k] = Math.max(0, state.effects[k] - dt);
+      const targetW = state.effects.wide > 0 ? CUP_W_WIDE : CUP_W;
+      state.cupW += (targetW - state.cupW) * Math.min(1, dt * 8);
+
+      const prevX = state.cupX;
+      const flip = state.effects.reverse > 0 ? -1 : 1;
+      const dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+      state.cupX += dir * flip * 360 * dt;
+      if(pointerX !== null){
+        const tx = flip === 1 ? pointerX : W - pointerX;
+        state.cupX += (tx - state.cupX) * Math.min(1, dt * 14);
+      }
+      state.cupX = Math.max(state.cupW/2, Math.min(W - state.cupW/2, state.cupX));
+      state.cupVX += ((state.cupX - prevX) / Math.max(dt, 0.001) - state.cupVX) * Math.min(1, dt * 10);
+
+      updateFx(dt);
+
+      if(state.countdown > 0){
+        const before = Math.ceil(state.countdown);
+        state.countdown -= dt;
+        const after = Math.ceil(state.countdown);
+        if(state.countdown <= 0) sfx('go');
+        else if(after !== before) sfx('tick');
+        return;
       }
 
-      const cupTop = H - 70;
+      const slow = state.effects.slow > 0 ? 0.45 : 1;
+      state.spawnTimer -= dt * slow;
+      if(state.spawnTimer <= 0){
+        spawn();
+        state.spawnTimer = state.spawnEvery * rand(0.7, 1.3);
+      }
+
       for(let i = state.items.length - 1; i >= 0; i--){
         const it = state.items[i];
-        it.y += it.vy * dt;
-        it.rot += it.vr * dt;
-        if(it.y >= cupTop - 8 && it.y <= cupTop + 14 && Math.abs(it.x - state.cupX) < state.cupW/2 + 6){
+        it.y += it.vy * dt * slow;
+        it.x += Math.cos(state.time * 2.4 + it.phase) * it.sway * dt;
+        it.x = Math.max(16, Math.min(W - 16, it.x));
+        it.rot += it.vr * dt * slow;
+        if(it.y >= CUP_Y - 10 && it.y <= CUP_Y + 14 && Math.abs(it.x - state.cupX) < state.cupW/2 + 6){
           state.items.splice(i, 1);
           catchItem(it);
           if(!running) return;
@@ -1296,97 +1625,323 @@
           state.items.splice(i, 1);
         }
       }
+    }
 
-      for(let i = state.particles.length - 1; i >= 0; i--){
-        const p = state.particles[i];
-        p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 420 * dt; p.life -= dt;
-        if(p.life <= 0) state.particles.splice(i, 1);
+    // ---------- drawing ----------
+    function drawBean(x, y, rot, scale, color, line){
+      ctx.save();
+      ctx.translate(x, y); ctx.rotate(rot); ctx.scale(scale, scale);
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.ellipse(0, 0, 11, 15, 0, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = line; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, -12); ctx.quadraticCurveTo(4, 0, 0, 12); ctx.stroke();
+      ctx.restore();
+    }
+    function drawSquare(x, y, rot, scale, color, line){
+      ctx.save();
+      ctx.translate(x, y); ctx.rotate(rot); ctx.scale(scale, scale);
+      ctx.fillStyle = color;
+      ctx.fillRect(-13, -13, 26, 26);
+      ctx.strokeStyle = line; ctx.lineWidth = 1.5;
+      ctx.strokeRect(-13, -13, 26, 26);
+      ctx.beginPath(); ctx.moveTo(0, -13); ctx.lineTo(0, 13); ctx.moveTo(-13, 0); ctx.lineTo(13, 0); ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawBackground(){
+      const g = ctx.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, '#5A3A22'); g.addColorStop(0.5, '#3E2317'); g.addColorStop(0.5, '#3A2222'); g.addColorStop(1, '#241313');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      if(state && state.fever){
+        // rotating golden rays
+        ctx.save();
+        ctx.translate(W/2, H * 0.45);
+        ctx.rotate(state.time * 0.4);
+        ctx.fillStyle = 'rgba(241,210,154,0.07)';
+        for(let i = 0; i < 12; i++){
+          ctx.rotate(Math.PI / 6);
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-40, -H); ctx.lineTo(40, -H); ctx.closePath(); ctx.fill();
+        }
+        ctx.restore();
       }
+
+      ctx.globalAlpha = 0.12;
+      ambient.forEach(b => b.type === 'cafe'
+        ? drawBean(b.x, b.y, b.rot, b.size, '#C08A55', '#3E2317')
+        : drawSquare(b.x, b.y, b.rot, b.size, '#8A5A54', '#3A2222'));
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = 'rgba(250,244,232,0.07)';
+      ctx.font = 'italic 600 46px Fraunces, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Chocafé', W/2, H/2 - 40);
+      ctx.font = '500 12px "JetBrains Mono", monospace';
+      ctx.fillText('UN JEU DE THÉO LAPIERRE', W/2, H/2);
     }
 
     function drawItem(it){
+      const pulse = 1 + Math.sin(state.time * 8 + it.phase) * 0.08;
+      if(it.type !== 'cafe' && it.type !== 'choco'){
+        // halo: gold for bonuses, red for traps
+        const good = it.type !== 'ice' && it.type !== 'chili';
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        ctx.strokeStyle = good ? COLORS.goldLight : COLORS.red;
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(it.x, it.y, 22 * pulse, 0, Math.PI*2); ctx.stroke();
+        ctx.restore();
+      }
+      // motion trail
+      ctx.globalAlpha = 0.14;
+      drawItemShape(it, it.x, it.y - it.vy * 0.05);
+      ctx.globalAlpha = 0.07;
+      drawItemShape(it, it.x, it.y - it.vy * 0.1);
+      ctx.globalAlpha = 1;
+      drawItemShape(it, it.x, it.y);
+    }
+
+    function drawItemShape(it, x, y){
+      if(it.type === 'cafe') return drawBean(x, y, it.rot, 1, COLORS.cafe, '#3E2317');
+      if(it.type === 'choco') return drawSquare(x, y, it.rot, 1, COLORS.choco, '#A0716A');
       ctx.save();
-      ctx.translate(it.x, it.y);
-      ctx.rotate(it.rot);
-      if(it.type === 'cafe'){
-        ctx.fillStyle = COLORS.cafe;
-        ctx.beginPath(); ctx.ellipse(0, 0, 11, 15, 0, 0, Math.PI*2); ctx.fill();
-        ctx.strokeStyle = '#3E2317'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0, -12); ctx.quadraticCurveTo(4, 0, 0, 12); ctx.stroke();
-      } else if(it.type === 'choco'){
-        ctx.fillStyle = COLORS.choco;
-        ctx.fillRect(-13, -13, 26, 26);
-        ctx.strokeStyle = '#A0716A'; ctx.lineWidth = 1.5;
-        ctx.strokeRect(-13, -13, 26, 26);
-        ctx.beginPath(); ctx.moveTo(0, -13); ctx.lineTo(0, 13); ctx.moveTo(-13, 0); ctx.lineTo(13, 0); ctx.stroke();
-      } else if(it.type === 'theo'){
-        ctx.shadowColor = COLORS.gold; ctx.shadowBlur = 18;
-        ctx.fillStyle = COLORS.gold;
+      ctx.translate(x, y);
+      if(it.type === 'theo'){
+        ctx.rotate(it.rot);
+        ctx.shadowColor = COLORS.gold; ctx.shadowBlur = 20;
+        const g = ctx.createRadialGradient(-4, -6, 2, 0, 0, 16);
+        g.addColorStop(0, COLORS.goldLight); g.addColorStop(1, COLORS.gold);
+        ctx.fillStyle = g;
         ctx.beginPath(); ctx.ellipse(0, 0, 12, 16, 0, 0, Math.PI*2); ctx.fill();
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#241313';
         ctx.font = 'bold 10px Fraunces, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('TL', 0, 1);
-      } else {
-        ctx.fillStyle = COLORS.ice;
-        ctx.globalAlpha = 0.9;
-        ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-12, -12, 24, 24, 5) : ctx.rect(-12, -12, 24, 24); ctx.fill();
-        ctx.globalAlpha = 1;
+      } else if(it.type === 'ice'){
+        ctx.rotate(it.rot);
+        ctx.fillStyle = COLORS.ice; ctx.globalAlpha *= 0.92;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(-12, -12, 24, 24, 5); else ctx.rect(-12, -12, 24, 24);
+        ctx.fill();
         ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(-6, -6); ctx.lineTo(2, -6); ctx.stroke();
+      } else if(it.type === 'cream'){
+        ctx.fillStyle = COLORS.cream;
+        [[0, 6, 12], [-6, -2, 9], [6, -2, 9], [0, -9, 7]].forEach(([cx, cy, r]) => {
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+        });
+        ctx.strokeStyle = 'rgba(200,155,92,0.6)'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.arc(0, 2, 6, Math.PI * 0.1, Math.PI * 0.9); ctx.stroke();
+      } else if(it.type === 'slow'){
+        ctx.rotate(Math.sin(state.time * 3) * 0.3);
+        ctx.strokeStyle = COLORS.goldLight; ctx.fillStyle = 'rgba(241,210,154,0.35)'; ctx.lineWidth = 2.2;
+        ctx.beginPath(); ctx.moveTo(-10, -14); ctx.lineTo(10, -14); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-10, 14); ctx.lineTo(10, 14); ctx.lineTo(0, 0); ctx.closePath(); ctx.stroke();
+        ctx.fillStyle = COLORS.goldLight;
+        ctx.beginPath(); ctx.moveTo(-5, 14); ctx.lineTo(5, 14); ctx.lineTo(0, 8); ctx.closePath(); ctx.fill();
+      } else if(it.type === 'chili'){
+        ctx.rotate(it.rot * 0.5);
+        ctx.fillStyle = COLORS.red;
+        ctx.beginPath(); ctx.moveTo(-4, -10); ctx.quadraticCurveTo(14, -6, 6, 14); ctx.quadraticCurveTo(-8, 4, -4, -10); ctx.fill();
+        ctx.strokeStyle = '#4C8C3A'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(-4, -10); ctx.quadraticCurveTo(-6, -16, -1, -18); ctx.stroke();
       }
       ctx.restore();
     }
 
-    function drawCup(){
-      const x = state ? state.cupX : W/2, w = state ? state.cupW : 84;
-      const top = H - 70, h = 54, bottom = top + h;
+    function drawCupAt(x, baseY, w, layers, tilt, time, glow){
+      const h = 54, top = baseY, bottom = top + h, inset = 10;
       const left = x - w/2, right = x + w/2;
-      const inset = 10;
-      // contents, stacked as caught
-      const layers = state ? state.layers : [];
+      ctx.save();
+      ctx.translate(x, bottom);
+      ctx.rotate(tilt);
+      ctx.translate(-x, -bottom);
+
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(left, top); ctx.lineTo(right, top); ctx.lineTo(right - inset, bottom); ctx.lineTo(left + inset, bottom); ctx.closePath();
       ctx.clip();
+      // wavy, marbled layers in the order they were caught
       const band = h / CAPACITY;
-      layers.forEach((l, i) => {
-        ctx.fillStyle = COLORS[l];
-        ctx.fillRect(left, bottom - (i + 1) * band - 0.5, w, band + 1);
-      });
+      const amp = 1.2 + Math.min(Math.abs(tilt) * 14, 4);
+      const wave = (px, i) => Math.sin(px * 0.09 + time * 5 + i * 0.7) * amp;
+      for(let i = layers.length - 1; i >= 0; i--){
+        const y0 = bottom - (i + 1) * band;
+        ctx.fillStyle = COLORS[layers[i]];
+        ctx.beginPath();
+        ctx.moveTo(left, bottom + 2);
+        for(let px = left; px <= right + 6; px += 6) ctx.lineTo(px, y0 + wave(px, i));
+        ctx.lineTo(right, bottom + 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+      if(layers.length){
+        // foam line on top of the drink
+        const yTop = bottom - layers.length * band;
+        ctx.strokeStyle = 'rgba(250,244,232,0.35)'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for(let px = left; px <= right + 6; px += 6) ctx.lineTo(px, yTop + wave(px, layers.length - 1));
+        ctx.stroke();
+      }
+      // glass shine
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(left + 14, top, 6, h);
       ctx.restore();
-      // cup outline + handle
-      ctx.strokeStyle = COLORS.foam; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+
+      ctx.strokeStyle = glow ? COLORS.goldLight : COLORS.foam;
+      if(glow){ ctx.shadowColor = COLORS.gold; ctx.shadowBlur = 14; }
+      ctx.lineWidth = 3; ctx.lineJoin = 'round';
       ctx.beginPath();
       ctx.moveTo(left, top); ctx.lineTo(left + inset, bottom); ctx.lineTo(right - inset, bottom); ctx.lineTo(right, top);
       ctx.stroke();
       ctx.beginPath();
       ctx.arc(right - 2, top + h/2 - 4, 12, -Math.PI/2.4, Math.PI/2.4);
       ctx.stroke();
-      // saucer
       ctx.beginPath(); ctx.ellipse(x, bottom + 6, w/2 + 12, 5, 0, 0, Math.PI*2); ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    }
+
+    function drawTicket(){
+      const e = 1 - Math.pow(1 - state.ticketT, 3);
+      const x = 12, y = 12 - (1 - e) * 80, w = 176, h = 54;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-0.025);
+      ctx.fillStyle = COLORS.foam;
+      ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 3;
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(0, 0, w, h, 6); else ctx.rect(0, 0, w, h);
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.fillStyle = '#8B5A2B';
+      ctx.font = '500 9px "JetBrains Mono", monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText('COMMANDE · TABLE ' + (state.cups + 1), 10, 8);
+      ctx.fillStyle = '#241814';
+      ctx.font = '600 13px Fraunces, serif';
+      ctx.fillText(state.order.name, 10, 20);
+      ctx.font = '500 11px "JetBrains Mono", monospace';
+      ctx.fillText(`☕ ${state.order.cafe}   🍫 ${CAPACITY - state.order.cafe}`, 10, 37);
+      ctx.restore();
+    }
+
+    function drawEffects(){
+      const list = [['wide', '🍦', 8], ['slow', '⏳', 6], ['reverse', '🌶️', 5]].filter(([k]) => state.effects[k] > 0);
+      list.forEach(([k, icon, max], i) => {
+        const x = 14, y = 78 + i * 26;
+        ctx.fillStyle = 'rgba(36,19,19,0.7)';
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(x, y, 84, 20, 10); else ctx.rect(x, y, 84, 20);
+        ctx.fill();
+        ctx.font = '12px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(icon, x + 6, y + 10.5);
+        ctx.fillStyle = k === 'reverse' ? COLORS.red : COLORS.goldLight;
+        ctx.fillRect(x + 26, y + 8, 50 * (state.effects[k] / max), 4);
+      });
     }
 
     function draw(){
-      const g = ctx.createLinearGradient(0, 0, W, H);
-      g.addColorStop(0, '#5A3A22'); g.addColorStop(0.5, '#3E2317'); g.addColorStop(0.5, '#3A2222'); g.addColorStop(1, '#241313');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = 'rgba(250,244,232,0.08)';
-      ctx.font = 'italic 600 46px Fraunces, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('Chocafé', W/2, H/2 - 40);
-      ctx.font = '500 12px "JetBrains Mono", monospace';
-      ctx.fillText('UN JEU DE THÉO LAPIERRE', W/2, H/2);
+      ctx.save();
+      if(state && state.shake > 0.3) ctx.translate(rand(-1, 1) * state.shake, rand(-1, 1) * state.shake);
+      drawBackground();
+
       if(state){
-        state.items.forEach(drawItem);
-        state.particles.forEach(p => {
-          ctx.globalAlpha = Math.max(0, p.life / 0.6);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+        if(state.effects.slow > 0){
+          ctx.fillStyle = 'rgba(127,183,214,0.08)';
+          ctx.fillRect(0, 0, W, H);
+        }
+        state.steam.forEach(s => {
+          ctx.globalAlpha = Math.max(0, s.life / 1.3) * 0.25;
+          ctx.fillStyle = COLORS.foam;
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
         });
         ctx.globalAlpha = 1;
+        state.items.forEach(drawItem);
+
+        state.ghosts.forEach(gh => {
+          const k = gh.t / 0.8;
+          ctx.save();
+          ctx.globalAlpha = 1 - k;
+          ctx.translate(gh.x, CUP_Y + 27);
+          ctx.scale(1 - k * 0.4, 1 - k * 0.4);
+          ctx.translate(-gh.x, -(CUP_Y + 27) - k * 260);
+          drawCupAt(gh.x, CUP_Y, CUP_W, gh.layers, 0, state.time, true);
+          ctx.restore();
+        });
+
+        const tilt = Math.max(-0.22, Math.min(0.22, state.cupVX / 1600));
+        drawCupAt(state.cupX, CUP_Y, state.cupW, state.layers, tilt, state.time, state.fever);
+
+        state.rings.forEach(r => {
+          ctx.globalAlpha = Math.max(0, r.life / r.max);
+          ctx.strokeStyle = r.color; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI*2); ctx.stroke();
+        });
+        state.particles.forEach(p => {
+          ctx.globalAlpha = Math.max(0, Math.min(1, p.life / p.max * 1.5));
+          ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+
+        state.floaters.forEach(f => {
+          const k = f.life / f.max;
+          ctx.globalAlpha = Math.min(1, k * 2);
+          ctx.font = `700 ${f.size * (1 + (1 - k) * 0.25)}px Fraunces, serif`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(36,19,19,0.8)';
+          ctx.strokeText(f.text, f.x, f.y);
+          ctx.fillStyle = f.color;
+          ctx.fillText(f.text, f.x, f.y);
+        });
+        ctx.globalAlpha = 1;
+
+        drawTicket();
+        drawEffects();
+
+        if(state.fever){
+          ctx.font = '600 11px "JetBrains Mono", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillStyle = `rgba(241,210,154,${0.6 + Math.sin(state.time * 8) * 0.4})`;
+          ctx.fillText('🔥 MODE FUSION ×2', W/2, H - 8);
+        }
+
+        if(state.countdown > 0){
+          const n = Math.ceil(state.countdown), frac = state.countdown - Math.floor(state.countdown);
+          ctx.globalAlpha = Math.min(1, frac * 2);
+          ctx.fillStyle = COLORS.goldLight;
+          ctx.font = `700 ${70 + (1 - frac) * 40}px Fraunces, serif`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(String(n), W/2, H * 0.45);
+          ctx.globalAlpha = 1;
+          ctx.font = '500 12px "JetBrains Mono", monospace';
+          ctx.fillStyle = COLORS.foam;
+          ctx.fillText('SUIVEZ LA COMMANDE DU TICKET', W/2, H * 0.45 + 62);
+        }
+
+        if(state.banner){
+          const t = state.banner.t, a = t < 0.3 ? t / 0.3 : t > 1.6 ? Math.max(0, (2 - t) / 0.4) : 1;
+          ctx.globalAlpha = a;
+          ctx.fillStyle = 'rgba(36,19,19,0.6)';
+          ctx.fillRect(0, H * 0.36, W, 74);
+          ctx.fillStyle = COLORS.goldLight;
+          ctx.font = '700 30px Fraunces, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(state.banner.title, W/2 + (1 - a) * 40, H * 0.36 + 28);
+          ctx.fillStyle = COLORS.foam;
+          ctx.font = '500 11px "JetBrains Mono", monospace';
+          ctx.fillText(state.banner.sub.toUpperCase(), W/2, H * 0.36 + 56);
+          ctx.globalAlpha = 1;
+        }
+
+        if(state.flash){
+          ctx.globalAlpha = Math.max(0, state.flash.a);
+          ctx.fillStyle = state.flash.color;
+          ctx.fillRect(-20, -20, W + 40, H + 40);
+          ctx.globalAlpha = 1;
+        }
+      } else {
+        drawCupAt(W/2, CUP_Y, CUP_W, [], 0, 0, false);
       }
-      drawCup();
+      ctx.restore();
     }
 
     function loop(now){
@@ -1400,8 +1955,13 @@
       }
     }
 
+    // ---------- controls ----------
     function setKey(e, down){
       const k = e.key;
+      if(down && (k === 'p' || k === 'P') && (running || paused)){
+        running ? pause() : resume();
+        return;
+      }
       if(k === 'ArrowLeft' || k === 'a' || k === 'q') keys.left = down;
       else if(k === 'ArrowRight' || k === 'd') keys.right = down;
       else return;
@@ -1414,33 +1974,24 @@
       const rect = canvas.getBoundingClientRect();
       return (clientX - rect.left) / rect.width * W;
     }
-    frame.addEventListener('pointermove', e => { if(running) pointerX = toLocalX(e.clientX); });
-    frame.addEventListener('pointerdown', e => { if(running) pointerX = toLocalX(e.clientX); });
-    frame.addEventListener('pointerleave', e => { if(e.pointerType === 'mouse') pointerX = null; });
+    canvas.addEventListener('pointermove', e => { if(running) pointerX = toLocalX(e.clientX); });
+    canvas.addEventListener('pointerdown', e => { if(running) pointerX = toLocalX(e.clientX); });
+    canvas.addEventListener('pointerleave', e => { if(e.pointerType === 'mouse') pointerX = null; });
 
-    document.addEventListener('visibilitychange', () => {
-      if(document.hidden && running){
-        running = false;
-        overlayTitle.textContent = 'Pause café';
-        overlayText.textContent = 'La tasse vous attend, elle ne refroidira pas.';
-        overlayRank.textContent = '';
-        startBtn.textContent = 'Reprendre';
-        startBtn.dataset.resume = '1';
-        overlay.hidden = false;
-      }
-    });
+    document.addEventListener('visibilitychange', () => { if(document.hidden) pause(); });
+    // pause when the game scrolls out of view
+    new IntersectionObserver(([entry]) => { if(!entry.isIntersecting) pause(); }, { threshold: 0.25 }).observe(frame);
 
-    startBtn.addEventListener('click', () => {
-      if(startBtn.dataset.resume && state && state.lives > 0){
-        delete startBtn.dataset.resume;
-        overlay.hidden = true;
-        running = true;
-        lastTime = performance.now();
-        requestAnimationFrame(loop);
-        return;
-      }
-      delete startBtn.dataset.resume;
-      start();
+    pauseBtn.addEventListener('click', () => running ? pause() : resume());
+    startBtn.addEventListener('click', () => paused ? resume() : start());
+    shareBtn.addEventListener('click', async () => {
+      const text = `J'ai fait ${state ? state.score : 0} points à La Fusion, le jeu de Théo Lapierre sur Chocafé ☕🍫 Qui fait mieux ?`;
+      const url = location.href.split('#')[0] + '#jeu';
+      try {
+        if(navigator.share){ await navigator.share({ title: 'La Fusion · Chocafé', text, url }); return; }
+        await navigator.clipboard.writeText(text + ' ' + url);
+        shareBtn.textContent = 'Copié !';
+      } catch(e) {}
     });
 
     window.addEventListener('resize', resize);
