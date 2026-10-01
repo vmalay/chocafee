@@ -21,7 +21,7 @@
     font-size: 16px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth; scroll-padding-top:72px;}
   body{
     font-family:'Work Sans', sans-serif;
     color:var(--ink);
@@ -189,6 +189,9 @@
 
   /* ---------- MENU ---------- */
   .menu{background:var(--cream);}
+  /* team and menu share the cream background: avoid a doubled gap */
+  .team{padding-bottom:60px;}
+  .team + .menu{padding-top:60px;}
   .menu-list{display:flex; flex-direction:column;}
   .menu-item{
     display:grid; grid-template-columns:1.4fr 2fr auto; gap:24px; align-items:center;
@@ -337,7 +340,7 @@
   .faq-item p{margin-top:12px; font-size:0.95rem; line-height:1.6; opacity:0.85; max-width:640px;}
 
   /* Créateur */
-  .createur{background:var(--foam); padding-bottom:40px;}
+  .createur{background:var(--foam); padding-top:0; padding-bottom:40px;}
   .createur-card{
     display:grid; grid-template-columns:auto 1fr; gap:40px; align-items:start;
     padding:44px 48px; border-radius:24px; color:var(--foam);
@@ -403,6 +406,131 @@
   .rules .ico{font-size:1.3rem; text-align:center;}
   .rules-note{margin-top:26px; font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.04em; opacity:0.6; line-height:1.6;}
   @media (max-width:860px){ .jeu-grid{grid-template-columns:1fr;} .game-frame{max-width:420px; margin:0 auto;} }
+
+  /* ---------- MOBILE NAV DRAWER ---------- */
+  .nav-right{display:flex; align-items:center; gap:12px;}
+  .burger{
+    display:none; width:42px; height:42px; border-radius:50%; border:1px solid var(--ink);
+    background:none; cursor:pointer; align-items:center; justify-content:center; flex-direction:column; gap:5px;
+  }
+  .burger span{display:block; width:16px; height:1.5px; background:var(--ink); transition:transform .25s ease, opacity .25s ease;}
+  .drawer-backdrop{
+    position:fixed; inset:0; z-index:150; background:rgba(36,19,19,0.5);
+    opacity:0; pointer-events:none; transition:opacity .3s ease;
+  }
+  .drawer{
+    position:fixed; top:0; right:0; bottom:0; z-index:160; width:min(84vw, 340px);
+    background:var(--cacao-dark); color:var(--foam); padding:22px 26px 32px;
+    display:flex; flex-direction:column; transform:translateX(100%); transition:transform .32s ease;
+    visibility:hidden;
+  }
+  body.drawer-open{overflow:hidden;}
+  body.drawer-open .drawer{transform:translateX(0); visibility:visible;}
+  body.drawer-open .drawer-backdrop{opacity:1; pointer-events:auto;}
+  .drawer-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;}
+  .drawer-head .logo .c1{color:var(--foam);}
+  .drawer-head .logo .c2{color:var(--gold);}
+  .drawer-close{
+    width:40px; height:40px; border-radius:50%; border:1px solid rgba(250,244,232,0.35);
+    background:none; color:var(--foam); font-size:1.3rem; cursor:pointer; line-height:1;
+  }
+  .drawer nav{display:flex; flex-direction:column;}
+  .drawer nav a{
+    font-family:'Fraunces', serif; font-size:1.35rem; font-weight:500; padding:13px 0;
+    border-bottom:1px solid rgba(250,244,232,0.1); display:flex; justify-content:space-between; align-items:center;
+  }
+  .drawer nav a::after{content:'→'; color:var(--gold); font-family:'Work Sans', sans-serif; font-size:1rem;}
+  .drawer .drawer-cta{margin-top:auto; text-align:center;}
+  .drawer .drawer-foot{margin-top:16px; font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.05em; text-transform:uppercase; opacity:0.55; text-align:center;}
+
+  .to-top{
+    position:fixed; right:16px; bottom:16px; z-index:90; width:46px; height:46px; border-radius:50%;
+    border:none; background:var(--gold); color:var(--ink); font-size:1.1rem; cursor:pointer;
+    box-shadow:0 6px 18px rgba(36,19,19,0.3); opacity:0; transform:translateY(12px); pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .to-top.show{opacity:1; transform:translateY(0); pointer-events:auto;}
+
+  .rules-box summary{display:none;}
+  .swipe-hint{display:none; margin-top:6px; font-family:'JetBrains Mono', monospace; font-size:0.64rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.5; text-align:right;}
+
+  /* ---------- MOBILE COMPACT ---------- */
+  @media (max-width:640px){
+    .wrap{padding:0 18px;}
+    .nav-inner{padding:12px 18px;}
+    .nav-cta{display:none;}
+    .burger{display:flex;}
+
+    section{padding:56px 0;}
+    .section-head{margin-bottom:26px;}
+    .section-head h2{font-size:1.55rem;}
+
+    .hero{min-height:auto; padding:96px 18px 48px;}
+    .hero h1{font-size:2.2rem; margin-bottom:14px;}
+    .hero p.lead{font-size:1rem; margin-bottom:24px;}
+    .eyebrow{margin-bottom:12px; font-size:0.62rem;}
+    .dosage{margin-bottom:22px;}
+    .btn{padding:12px 20px; font-size:0.9rem;}
+    .scroll-cue{display:none;}
+
+    .concept-text p{margin-bottom:14px; line-height:1.6;}
+    .concept-text p:nth-child(3){display:none;}
+    .origin-cards{flex-direction:row; gap:10px;}
+    .origin-card{padding:18px 16px; border-radius:14px; flex:1;}
+    .origin-card h3{font-size:1.02rem;}
+    .origin-card p{font-size:0.8rem;}
+
+    .createur{padding:8px 0 0;}
+    .team{padding-bottom:28px;}
+    .team + .menu{padding-top:28px;}
+    .createur-card{padding:24px 20px; gap:0; border-radius:18px;}
+    .createur-monogram{width:56px; height:56px; font-size:1.3rem; float:left; margin:0 14px 6px 0; box-shadow:0 0 0 4px rgba(200,155,92,0.25);}
+    .createur-card h2{font-size:1.35rem; margin-bottom:14px;}
+    .createur-card p{font-size:0.92rem; line-height:1.6; margin-bottom:12px;}
+    .createur-card blockquote{font-size:1rem; margin-top:14px;}
+
+    /* swipeable rows instead of long stacks */
+    .team-grid, .avis-grid{
+      display:flex; grid-template-columns:none; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory;
+      margin:0 -18px; padding:0 18px 10px; scrollbar-width:none;
+    }
+    .team-grid::-webkit-scrollbar, .avis-grid::-webkit-scrollbar{display:none;}
+    .team-card, .avis-card{flex:0 0 82%; scroll-snap-align:center; padding:20px;}
+    .swipe-hint{display:block;}
+    .team-grid .reveal, .avis-grid .reveal{opacity:1; transform:none;}
+
+    .menu-item{grid-template-columns:1fr auto; gap:4px 14px; padding:16px 0;}
+    .menu-item > div:first-child{grid-column:1;}
+    .menu-item .price{grid-column:2; grid-row:1; align-self:start; justify-self:end;}
+    .menu-item .desc{grid-column:1 / -1; font-size:0.86rem;}
+    .menu-item h4{font-size:1.08rem;}
+    .dose-track{width:90px; margin-top:6px;}
+
+    .jeu-grid{gap:20px;}
+    .game-frame{aspect-ratio:4/5; max-height:66vh; max-width:none;}
+    .game-hud{margin-top:12px;}
+    .game-hud strong{font-size:1rem;}
+    .rules-box{border:1px solid rgba(250,244,232,0.15); border-radius:14px; padding:14px 16px;}
+    .rules-box summary{
+      display:flex; justify-content:space-between; cursor:pointer; list-style:none;
+      font-family:'JetBrains Mono', monospace; font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--gold);
+    }
+    .rules-box summary::-webkit-details-marker{display:none;}
+    .rules-box summary::after{content:'+';}
+    .rules-box[open] summary::after{content:'−';}
+    .rules-box[open] .rules{margin-top:14px;}
+    .rules li{font-size:0.88rem;}
+
+    .espace-grid{gap:20px;}
+    .espace-visual{aspect-ratio:16/7; border-radius:16px;}
+    .espace-text p{font-size:0.92rem; line-height:1.6;}
+
+    .faq-item{padding:15px 0;}
+    .faq-item summary{font-size:0.98rem; gap:12px;}
+
+    footer{padding:52px 0 80px;}
+    .footer-grid{gap:26px; margin-bottom:36px;}
+  }
 </style>
 </head>
 <body>
@@ -417,9 +545,32 @@
       <a href="#espace">L'espace</a>
       <a href="#adresse">L'adresse</a>
     </nav>
-    <a href="#adresse" class="nav-cta">Réserver</a>
+    <div class="nav-right">
+      <a href="#adresse" class="nav-cta">Réserver</a>
+      <button class="burger" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="drawer"><span></span><span></span><span></span></button>
+    </div>
   </div>
 </header>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="drawer" aria-label="Menu" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="logo"><span class="c1">Choc</span><span class="c2">afé</span></div>
+    <button class="drawer-close" id="drawerClose" type="button" aria-label="Fermer le menu">×</button>
+  </div>
+  <nav>
+    <a href="#concept">Le concept</a>
+    <a href="#createur">Le créateur</a>
+    <a href="#carte">La carte</a>
+    <a href="#jeu">Le jeu</a>
+    <a href="#espace">L'espace</a>
+    <a href="#faq">FAQ</a>
+    <a href="#adresse">L'adresse</a>
+  </nav>
+  <a href="#adresse" class="btn btn-primary drawer-cta">Réserver une table</a>
+  <div class="drawer-foot">Une création de Théo Lapierre</div>
+</aside>
+<button class="to-top" id="toTop" type="button" aria-label="Revenir en haut">↑</button>
 
 <section class="hero">
   <div class="hero-bg">
@@ -502,7 +653,7 @@
   </div>
 </section>
 
-<section class="team">
+<section class="team" id="equipe">
   <div class="wrap">
     <div class="section-head reveal">
       <span class="mono">L'équipe</span>
@@ -540,6 +691,7 @@
         <p>A eu l'idée de marier café et chocolat, puis a inventé le jeu de la maison. Fait la navette Troyes-Paris chaque matin pour un café qu'il pourrait techniquement boire chez lui. On ne discute pas, on est flattés.</p>
       </div>
     </div>
+    <div class="swipe-hint">Glissez →</div>
   </div>
 </section>
 
@@ -643,6 +795,7 @@
         <div class="who">— Un habitué qui préfère ne pas être cité</div>
       </div>
     </div>
+    <div class="swipe-hint">Glissez →</div>
   </div>
 </section>
 
@@ -678,6 +831,8 @@
         </div>
       </div>
       <div class="reveal">
+        <details class="rules-box" id="rulesBox" open>
+        <summary>Règles du jeu</summary>
         <ul class="rules">
           <li><span class="ico">☕</span><span><strong>Grain de café</strong> : ajoute une dose de café dans la tasse.</span></li>
           <li><span class="ico">🍫</span><span><strong>Carré de chocolat</strong> : ajoute une dose de chocolat. Esquivez ce dont vous n'avez pas besoin.</span></li>
@@ -685,6 +840,7 @@
           <li><span class="ico">🧊</span><span><strong>Glaçon</strong> : un Chocafé froid ? Jamais. Vous perdez une vie si vous l'attrapez.</span></li>
           <li><span class="ico">⚖️</span><span><strong>Service</strong> : à 12 ingrédients, la tasse part. 6/6 = Fusion parfaite (100 pts, combo +1). 5/7 = 50 pts. 4/8 = 20 pts. Au-delà : imbuvable, une vie en moins.</span></li>
         </ul>
+        </details>
         <p class="rules-note">Ça accélère à chaque tasse servie. Battez le record de Théo et montrez votre score au comptoir : « Le Lapierre » vous est offert. (Il dit avoir fait 4 200. On n'a jamais vu la capture.)</p>
       </div>
     </div>
@@ -711,7 +867,7 @@
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <div class="section-head reveal">
       <span class="mono">Questions fréquentes</span>
@@ -1235,6 +1391,35 @@
     window.addEventListener('resize', resize);
     resize();
   })();
+
+
+  // --- mobile drawer ---
+  const drawer = document.getElementById('drawer');
+  const burger = document.getElementById('burger');
+  function setDrawer(open){
+    document.body.classList.toggle('drawer-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    drawer.setAttribute('aria-hidden', String(!open));
+    if(open) document.getElementById('drawerClose').focus();
+    else burger.focus({ preventScroll: true });
+  }
+  burger.addEventListener('click', () => setDrawer(true));
+  document.getElementById('drawerClose').addEventListener('click', () => setDrawer(false));
+  document.getElementById('drawerBackdrop').addEventListener('click', () => setDrawer(false));
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setDrawer(false)));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && document.body.classList.contains('drawer-open')) setDrawer(false); });
+
+  // --- back to top ---
+  const toTop = document.getElementById('toTop');
+  let jeuVisible = false;
+  new IntersectionObserver(([entry]) => { jeuVisible = entry.isIntersecting; updateToTop(); }, { threshold: 0.2 }).observe(document.getElementById('jeu'));
+  // hidden over the game so it never covers the HUD
+  function updateToTop(){ toTop.classList.toggle('show', window.scrollY > 900 && !jeuVisible); }
+  window.addEventListener('scroll', updateToTop, { passive: true });
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // --- game rules folded on small screens ---
+  if(window.matchMedia('(max-width:640px)').matches) document.getElementById('rulesBox').open = false;
 
   // --- scroll reveal ---
   const revealEls = document.querySelectorAll('.reveal');
