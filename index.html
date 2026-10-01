@@ -602,6 +602,24 @@
   }
   .game-ratio .caption .order{color:var(--gold); opacity:1; text-align:center;}
   .game-ratio .caption i{font-style:normal; opacity:0.6;}
+
+  @media (max-width:640px){
+    /* tighter rhythm between sections */
+    section{padding:30px 0;}
+    .section-head{margin-bottom:14px;}
+    .section-head .mono{margin-bottom:8px;}
+    .hero{padding:88px 18px 36px;}
+    .createur{padding:0;}
+    .team{padding-top:30px; padding-bottom:16px;}
+    .team + .menu{padding-top:16px;}
+    .espace-grid{gap:0;}
+    .espace-text .mono{margin-bottom:8px !important;}
+    .faq-list{margin-top:0;}
+    footer{padding:32px 0 28px;}
+    .swipe-hint{margin-top:2px;}
+    /* no fade-in on phones: content is there as soon as it scrolls in, no blank areas */
+    .reveal{opacity:1; transform:none; transition:none;}
+  }
 </style>
 </head>
 <body>
